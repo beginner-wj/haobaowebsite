@@ -229,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     animateNumbers();
     initAboutTabs();
+    initMetalPrices();
     
     // 语言切换按钮事件
     const langToggle = document.getElementById('langToggle');
@@ -244,4 +245,101 @@ window.addEventListener('resize', () => {
         navMenu.classList.remove('active');
     }
 });
+
+// 金银报价（可配置 API，默认降级为占位）
+// 说明：由于不同数据源对 CORS / key 要求不同，这里做成可替换的 fetcher。
+function initMetalPrices() {
+    const xauEl = document.getElementById('priceXAUUSD');
+    const xagEl = document.getElementById('priceXAGUSD');
+    if (!xauEl || !xagEl) return;
+
+    // 使用 GoldAPI (goldapi.io)
+    // 注意：此实现会在前端暴露 API Key，如需更安全可改为由后端 / Worker 代理。
+    const GOLDAPI_KEY = 'goldapi-3dyvssmkwciu4j-io';
+    const GOLDAPI_BASE = 'https://api.goldapi.io/api';
+
+    // 期望返回格式：{ xauusd: number, xagusd: number, timestamp?: string }
+    const fetcher = async () => {
+        // 简单的“每天一次”缓存，避免超过免费额度
+        const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const cacheKey = 'metal_prices_cache';
+        const cacheRaw = localStorage.getItem(cacheKey);
+        if (cacheRaw) {
+            try {
+                const cache = JSON.parse(cacheRaw);
+                if (cache.date === today && cache.xauusd && cache.xagusd) {
+                    return cache;
+                }
+            } catch (e) {
+                // ignore parse error
+            }
+        }
+
+        const headers = {
+            'x-access-token': GOLDAPI_KEY,
+            'Content-Type': 'application/json'
+        };
+
+        const [xauRes, xagRes] = await Promise.all([
+            fetch(`${GOLDAPI_BASE}/XAU/USD`, { headers }),
+            fetch(`${GOLDAPI_BASE}/XAG/USD`, { headers })
+        ]);
+
+        if (!xauRes.ok || !xagRes.ok) {
+            throw new Error('GoldAPI request failed');
+        }
+
+        const xauData = await xauRes.json();
+        const xagData = await xagRes.json();
+
+        const result = {
+            xauusd: xauData.price || xauData.price_gram_24k * 31.1035 || null,
+            xagusd: xagData.price || xagData.price_gram_999 * 31.1035 || null,
+            date: today
+        };
+
+        try {
+            localStorage.setItem(cacheKey, JSON.stringify(result));
+        } catch (e) {
+            // 忽略本地存储错误
+        }
+
+        return result;
+    };
+
+    const formatUsd = (v) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        return `$${n.toFixed(2)}`;
+    };
+
+    const setLoading = () => {
+        xauEl.textContent = 'Loading…';
+        xagEl.textContent = 'Loading…';
+    };
+
+    const setFallback = () => {
+        xauEl.textContent = '—';
+        xagEl.textContent = '—';
+    };
+
+    const refresh = async () => {
+        try {
+            setLoading();
+            const data = await fetcher();
+            if (!data) {
+                setFallback();
+                return;
+            }
+            xauEl.textContent = formatUsd(data.xauusd);
+            xagEl.textContent = formatUsd(data.xagusd);
+        } catch (e) {
+            setFallback();
+        }
+    };
+
+    refresh();
+    // 每 60 秒尝试刷新一次（如果你启用 fetcher）
+    setInterval(refresh, 60_000);
+}
 

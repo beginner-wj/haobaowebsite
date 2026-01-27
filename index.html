@@ -16,7 +16,7 @@
             <div class="nav-wrapper">
                 <div class="logo-section">
                     <div class="logo-circle">
-                        <span class="logo-monogram">HB</span>
+                        <img class="site-logo" src="logo.png" alt="Haobao logo">
                     </div>
                     <div class="logo-text">
                         <span data-i18n="logo.text">Haobao Pte. Ltd.</span>
@@ -27,7 +27,6 @@
                     <li><a href="#about" data-i18n="nav.about">About Us</a></li>
                     <li><a href="#products" data-i18n="nav.products">Products</a></li>
                     <li><a href="#storage" data-i18n="nav.storage">Storage Solutions</a></li>
-                    <li><a href="#education" data-i18n="nav.education">Education</a></li>
                     <li><a href="#contact" data-i18n="nav.contact">Contact Us</a></li>
                 </ul>
                 <div class="nav-actions">
@@ -73,6 +72,10 @@
     <!-- 关于我们 -->
     <section class="about" id="about">
         <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="about.title">About Us</h2>
+                <p class="section-subtitle" data-i18n="about.subtitle">Leading the future of gold investment</p>
+            </div>
             <div class="about-wrapper">
                 <div class="about-left">
                     <button class="about-btn active" data-tab="who">
@@ -124,9 +127,15 @@
         </div>
     </section>
 
+    <div class="section-separator" aria-hidden="true"></div>
+
     <!-- 产品 -->
     <section class="products" id="products">
         <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="products.title">Our Products</h2>
+                <p class="section-subtitle" data-i18n="products.subtitle">Investment-grade gold products for every investor</p>
+            </div>
             <div class="products-intro">
                 <p data-i18n="products.intro.text1">We provide access to a broad range of <strong data-i18n="products.intro.highlight1">physical gold, silver, and selected precious metals</strong>, sourced through established global channels. All transactions are conducted <strong data-i18n="products.intro.highlight2">exclusively on an over-the-counter (OTC) basis</strong>, allowing for a personalised, confidential, and flexible execution process.</p>
                 <p data-i18n="products.intro.text2">Product availability, specifications, and pricing are discussed directly with our team to ensure clarity and suitability for each client.</p>
@@ -157,7 +166,7 @@
                 <div class="product-pricing">
                     <div class="pricing-box">
                         <p class="pricing-label" data-i18n="products.pricing.label">Indicative Price per ozt:</p>
-                        <div class="pricing-input">______</div>
+                        <div class="pricing-input" id="priceXAUUSD">—</div>
                         <p class="pricing-note" data-i18n="products.pricing.note">1ozt = 31.1035g</p>
                     </div>
                 </div>
@@ -186,7 +195,7 @@
                 <div class="product-pricing">
                     <div class="pricing-box">
                         <p class="pricing-label" data-i18n="products.pricing.label">Indicative Price per ozt:</p>
-                        <div class="pricing-input">______</div>
+                        <div class="pricing-input" id="priceXAGUSD">—</div>
                         <p class="pricing-note" data-i18n="products.pricing.note">1ozt = 31.1035g</p>
                     </div>
                 </div>
@@ -208,12 +217,18 @@
         </div>
     </section>
 
+    <div class="section-separator" aria-hidden="true"></div>
+
     <!-- 存储解决方案 -->
     <section class="storage" id="storage">
         <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="storage.title">Storage Solutions</h2>
+                <p class="section-subtitle" data-i18n="storage.subtitle">Secure and insured storage for your precious metals</p>
+            </div>
             <div class="storage-content">
                 <div class="storage-text">
-                    <p data-i18n="storage.text1">For clients who prefer not to hold precious metals personally, we offer secure and fully insured storage solutions through partnerships with <strong data-i18n="storage.highlight1">industry-leading custody providers</strong>, including Le Freeport and <strong data-i18n="storage.highlight2">Malca-Amit</strong>.</p>
+                    <p data-i18n="storage.text1">For clients who prefer not to hold precious metals personally, we offer secure and fully insured storage solutions through partnerships with <strong data-i18n="storage.highlight1">industry-leading custody providers</strong>, including <span class="highlight-red">Le Freeport</span> and <strong data-i18n="storage.highlight2">Malca-Amit</strong>.</p>
                     <p data-i18n="storage.text2">These facilities provide high-security vaulting, professional handling, and internationally recognised standards for precious metals custody. Storage arrangements can be <strong data-i18n="storage.highlight3">fully personalised</strong>, whether for allocated holdings, specific bar or coin selection, or tailored access and liquidity requirements.</p>
                     <p data-i18n="storage.text3">By working with trusted global custodians, we ensure that your assets are safeguarded with the highest levels of security, confidentiality, and operational reliability.</p>
                     <div class="storage-cta">
@@ -238,18 +253,15 @@
         </div>
     </section>
 
-    <!-- 教育 -->
-    <section class="education" id="education">
-        <div class="container">
-            <div class="education-coming-soon">
-                <h2 data-i18n="education.comingSoon">Coming Soon, Stay Tuned!</h2>
-            </div>
-        </div>
-    </section>
+    <div class="section-separator" aria-hidden="true"></div>
 
     <!-- 联系我们 -->
     <section class="contact" id="contact">
         <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="contact.title">Contact Us</h2>
+                <p class="section-subtitle" data-i18n="contact.subtitle">Get in touch with our team</p>
+            </div>
             <div class="contact-content">
                 <div class="contact-section">
                     <h3 data-i18n="contact.speak.title">Speak With Our Team</h3>
@@ -287,7 +299,7 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <div class="logo-circle small">
-                            <span class="logo-monogram">HB</span>
+                            <img class="site-logo small" src="logo.png" alt="Haobao logo">
                         </div>
                         <span data-i18n="footer.company">Haobao Pte. Ltd.</span>
                     </div>
@@ -304,8 +316,7 @@
                 </div>
                 <div class="footer-section">
                     <h4 data-i18n="footer.contact">Contact</h4>
-                    <p>info@haobao.com</p>
-                    <p>+65 1234 5678</p>
+                    <p>sales@haobaoco.com</p>
                 </div>
             </div>
             <div class="footer-bottom">

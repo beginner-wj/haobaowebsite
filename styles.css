@@ -16,6 +16,7 @@
     --brown-light: #A0522D;
     --red-active: #DC143C;
     --border-light: #E5E5E5;
+    --separator-color: rgba(26, 26, 26, 0.18);
 }
 
 body {
@@ -65,6 +66,19 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.site-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
+}
+
+.site-logo.small {
+    width: 28px;
+    height: 28px;
 }
 
 .logo-circle.small {
@@ -329,6 +343,19 @@ body {
 /* 通用区块样式 */
 section {
     padding: 80px 0;
+}
+
+.section-separator {
+    height: 8px;
+    background: var(--separator-color);
+    max-width: 1400px;
+    margin: 0 auto;
+    border-radius: 999px;
+}
+
+.highlight-red {
+    color: var(--red-active);
+    font-weight: 600;
 }
 
 .section-header {
