@@ -253,11 +253,6 @@ function initMetalPrices() {
     const xagEl = document.getElementById('priceXAGUSD');
     if (!xauEl || !xagEl) return;
 
-    // 使用 GoldAPI (goldapi.io)
-    // 注意：此实现会在前端暴露 API Key，如需更安全可改为由后端 / Worker 代理。
-    const GOLDAPI_KEY = 'goldapi-3dyvssmkwciu4j-io';
-    const GOLDAPI_BASE = 'https://api.goldapi.io/api';
-
     // 期望返回格式：{ xauusd: number, xagusd: number, timestamp?: string }
     const fetcher = async () => {
         // 简单的“每天一次”缓存，避免超过免费额度
@@ -275,26 +270,16 @@ function initMetalPrices() {
             }
         }
 
-        const headers = {
-            'x-access-token': GOLDAPI_KEY,
-            'Content-Type': 'application/json'
-        };
-
-        const [xauRes, xagRes] = await Promise.all([
-            fetch(`${GOLDAPI_BASE}/XAU/USD`, { headers }),
-            fetch(`${GOLDAPI_BASE}/XAG/USD`, { headers })
-        ]);
-
-        if (!xauRes.ok || !xagRes.ok) {
-            throw new Error('GoldAPI request failed');
+        const res = await fetch('/prices');
+        if (!res.ok) {
+            throw new Error('Prices endpoint failed');
         }
 
-        const xauData = await xauRes.json();
-        const xagData = await xagRes.json();
+        const data = await res.json();
 
         const result = {
-            xauusd: xauData.price || xauData.price_gram_24k * 31.1035 || null,
-            xagusd: xagData.price || xagData.price_gram_999 * 31.1035 || null,
+            xauusd: data.xauusd || null,
+            xagusd: data.xagusd || null,
             date: today
         };
 
