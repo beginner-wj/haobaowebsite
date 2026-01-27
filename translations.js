@@ -101,7 +101,7 @@ const translations = {
         "footer.description": "以透明度和安全性引领黄金投资的未来。",
         "footer.quickLinks": "快速链接",
         "footer.contact": "联系方式",
-        "footer.copyright": "© 2024 好宝私人有限公司. 保留所有权利."
+        "footer.copyright": "© 2024 Haobao Pte. Ltd. All rights reserved."
     },
     en: {
         "logo.text": "Haobao Pte. Ltd.",
