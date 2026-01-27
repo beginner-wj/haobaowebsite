@@ -1,6 +1,7 @@
 export async function onRequest() {
   const GOLDAPI_KEY = 'goldapi-3dyvssmkwciu4j-io';
-  const GOLDAPI_BASE = 'https://api.goldapi.io/api';
+  // 你用 curl 验证可用的是 www.goldapi.io，这里保持一致，避免不同域名导致的权限/路由差异
+  const GOLDAPI_BASE = 'https://www.goldapi.io/api';
 
   const headers = {
     'x-access-token': GOLDAPI_KEY,
@@ -14,7 +15,12 @@ export async function onRequest() {
     ]);
 
     if (!xauRes.ok || !xagRes.ok) {
-      return new Response(JSON.stringify({ error: 'GoldAPI request failed' }), {
+      const detail = {
+        error: 'GoldAPI request failed',
+        xau_status: xauRes.status,
+        xag_status: xagRes.status
+      };
+      return new Response(JSON.stringify(detail), {
         status: 502,
         headers: {
           'Content-Type': 'application/json',
