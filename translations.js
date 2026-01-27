@@ -1,7 +1,7 @@
 // 翻译数据
 const translations = {
     zh: {
-        "logo.text": "好宝私人有限公司",
+        "logo.text": "Haobao Pte. Ltd.",
         "nav.home": "首页",
         "nav.about": "关于我们",
         "nav.products": "产品",
@@ -97,7 +97,7 @@ const translations = {
         "contact.hours.title": "营业时间",
         "contact.hours.weekdays": "周一至周五：0900 – 1800 (SGT)",
         "contact.hours.weekends": "周末及公共假期：休息",
-        "footer.company": "好宝私人有限公司",
+        "footer.company": "Haobao Pte. Ltd.",
         "footer.description": "以透明度和安全性引领黄金投资的未来。",
         "footer.quickLinks": "快速链接",
         "footer.contact": "联系方式",
