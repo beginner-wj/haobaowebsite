@@ -1017,7 +1017,7 @@ section {
 
 /* 页脚 */
 .footer {
-    background: var(--text-black);
+    background: #333333;
     color: var(--bg-white);
     padding: 60px 0 30px;
 }
