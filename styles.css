@@ -62,15 +62,23 @@ body {
 }
 
 .site-logo {
-    height: 56px;
+    /* 再放大导航栏主 logo，让小字清晰可见 */
+    height: 110px;
     width: auto;
     object-fit: contain;
     display: block;
 }
 
 .site-logo.small {
-    height: 40px;
+    /* 进一步放大页脚 logo，让小字清晰可见 */
+    height: 95px;
     width: auto;
+    display: block;
+    /* 向左右多扩一点，再整体左移 2px，把右侧白线完全裁掉 */
+    margin: -2px -8px;
+    transform: translateX(-2px);
+    /* 用 clip-path 精确裁掉右侧白线 */
+    clip-path: inset(0 3px 0 0);
 }
 
 .logo-monogram {
@@ -237,94 +245,129 @@ body {
 /* Hero图片区域 */
 .hero-image {
     position: relative;
-    height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 40px 0;
 }
 
-.gold-coins {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
+.hero-gold-card {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.12);
+}
+
+.hero-gold-image {
+    display: block;
+    /* 略微放大并左移，裁掉图片最右侧 1–2px 的暗边 */
+    width: 102%;
+    max-width: none;
+    height: auto;
+    transform: translateX(-1%);
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
 }
 
 .coin-stack {
+    display: none;
+}
+
+.coin-stack::before {
+    content: '';
     position: absolute;
-    width: 80px;
-    height: 120px;
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8941F 100%);
-    border-radius: 40px;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4),
-                inset 0 -10px 20px rgba(0, 0, 0, 0.2),
-                inset 0 10px 20px rgba(255, 255, 255, 0.3);
+    left: 6px;
+    right: 14px;
+    top: -16px;
+    height: 16px;
+    background: linear-gradient(to bottom, #FFF9D8 0%, #F3CF71 60%, #D1A342 100%);
+    border-radius: 4px;
+    transform-origin: bottom;
+    transform: skewX(-20deg);
+    box-shadow:
+        0 3px 4px rgba(0, 0, 0, 0.35),
+        inset 0 2px 4px rgba(255, 255, 255, 0.9);
+}
+
+.coin-stack::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: -22px;
+    width: 22px;
+    height: 40px;
+    background: linear-gradient(to right, #C89433 0%, #8B5B16 100%);
+    border-radius: 2px 6px 6px 2px;
+    transform-origin: left;
+    transform: skewY(-28deg);
+    box-shadow:
+        inset 2px 0 4px rgba(255, 220, 150, 0.7),
+        4px 4px 8px rgba(0, 0, 0, 0.45);
 }
 
 .stack-1 {
-    bottom: 100px;
-    left: 50px;
-    transform: rotate(-5deg);
+    bottom: 95px;
+    left: 40px;
+    transform: rotate(-8deg);
 }
 
 .stack-2 {
     bottom: 80px;
-    left: 180px;
-    transform: rotate(8deg);
-    height: 140px;
+    left: 200px;
+    transform: rotate(4deg);
 }
 
 .stack-3 {
-    bottom: 120px;
-    right: 150px;
-    transform: rotate(-10deg);
-    width: 70px;
-    height: 110px;
+    bottom: 115px;
+    right: 185px;
+    transform: rotate(-5deg);
+    width: 130px;
 }
 
 .stack-4 {
-    bottom: 90px;
+    bottom: 88px;
     right: 50px;
-    transform: rotate(5deg);
-    height: 130px;
+    transform: rotate(6deg);
 }
 
 .chart-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    border-radius: 20px;
-    opacity: 0.3;
-    filter: blur(40px);
-    z-index: 1;
+    display: none;
 }
 
 .chart-background::before {
     content: '';
     position: absolute;
-    top: 20%;
-    left: 10%;
-    right: 10%;
-    bottom: 20%;
-    background: 
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 20px,
-            rgba(0, 255, 0, 0.1) 20px,
-            rgba(0, 255, 0, 0.1) 22px
-        ),
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 20px,
-            rgba(255, 0, 0, 0.1) 20px,
-            rgba(255, 0, 0, 0.1) 22px
-        );
-    border-radius: 10px;
+    top: -20%;
+    left: -10%;
+    right: 30%;
+    bottom: 30%;
+    background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.55) 35%,
+        rgba(255, 255, 255, 0.2) 55%,
+        transparent 80%
+    );
+    border-radius: 30px;
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    pointer-events: none;
+    animation: goldShimmer 6s linear infinite;
+}
+
+@keyframes goldShimmer {
+    0% {
+        transform: translateX(-20%) translateY(0);
+        opacity: 0.6;
+    }
+    40% {
+        transform: translateX(20%) translateY(5%);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(60%) translateY(10%);
+        opacity: 0.4;
+    }
 }
 
 /* 通用区块样式 */
@@ -593,19 +636,14 @@ section {
     justify-content: center;
 }
 
-.gold-bars-image {
-    position: relative;
+.product-metal-image {
+    display: block;
     width: 150px;
-    height: 150px;
+    height: auto;
 }
 
-.gold-bar {
-    position: absolute;
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 50%, #B8941F 100%);
-    border-radius: 5px;
-    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4),
-                inset 0 -5px 10px rgba(0, 0, 0, 0.2),
-                inset 0 5px 10px rgba(255, 255, 255, 0.3);
+.gold-bars-image {
+    display: none;
 }
 
 .bar-1 {
@@ -641,18 +679,7 @@ section {
 }
 
 .silver-bars-image {
-    position: relative;
-    width: 150px;
-    height: 150px;
-}
-
-.silver-bar {
-    position: absolute;
-    background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 50%, #808080 100%);
-    border-radius: 5px;
-    box-shadow: 0 4px 10px rgba(192, 192, 192, 0.4),
-                inset 0 -5px 10px rgba(0, 0, 0, 0.2),
-                inset 0 5px 10px rgba(255, 255, 255, 0.3);
+    display: none;
 }
 
 .silver-bar.bar-1 {
@@ -854,76 +881,18 @@ section {
 }
 
 .partner-logo-image {
-    width: 120px;
-    height: 80px;
+    width: 140px;
+    height: auto;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.malca-amit-diamond {
-    width: 60px;
-    height: 60px;
-    position: relative;
-    transform: rotate(45deg);
-}
-
-.malca-amit-diamond::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-}
-
-.malca-amit-diamond::after {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    opacity: 0.7;
-}
-
-.le-freeport-symbol {
-    width: 50px;
-    height: 50px;
-    position: relative;
-    border: 3px solid var(--text-black);
-    border-radius: 5px;
-}
-
-.le-freeport-symbol::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
-    background: var(--red-active);
-    border-radius: 50%;
-}
-
-.le-freeport-symbol::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 15px;
-    height: 15px;
-    background: var(--bg-white);
-    border-radius: 50%;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+.storage-partner-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
 }
 
 .partner-name {
@@ -1017,7 +986,8 @@ section {
 
 /* 页脚 */
 .footer {
-    background: #333333;
+    /* 使用用户指定的 footer 背景色 */
+    background: #555554;
     color: var(--bg-white);
     padding: 60px 0 30px;
 }
@@ -1034,6 +1004,8 @@ section {
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+    /* 用来裁掉 logo 图片最外侧的白边 */
+    overflow: hidden;
 }
 
 .footer-logo span {
