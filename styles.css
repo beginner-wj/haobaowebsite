@@ -1054,13 +1054,21 @@ section {
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
+    .nav-wrapper {
+        gap: 20px;
+    }
+
+    .site-logo {
+        height: 90px;
+    }
+
     .hero-wrapper {
         grid-template-columns: 1fr;
         gap: 40px;
     }
     
     .hero-image {
-        height: 400px;
+        height: auto;
     }
     
     .about-wrapper {
@@ -1138,7 +1146,7 @@ section {
     }
     
     .hero {
-        padding: 100px 0 60px;
+        padding: 90px 0 50px;
     }
 
     .hero-title {
@@ -1150,7 +1158,8 @@ section {
     }
     
     .hero-image {
-        height: 300px;
+        height: auto;
+        padding: 20px 0 10px;
     }
     
     .section-title {
@@ -1200,6 +1209,9 @@ section {
 }
 
 @media (max-width: 480px) {
+    .site-logo {
+        height: 80px;
+    }
     .hero-title {
         font-size: 28px;
     }
@@ -1219,7 +1231,7 @@ section {
     }
     
     .logo-section {
-        gap: 10px;
+        gap: 16px;
     }
     
     .logo-circle {
