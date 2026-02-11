@@ -42,7 +42,7 @@ body {
     background: var(--bg-white);
     z-index: 1000;
     border-bottom: 1px solid var(--border-light);
-    padding: 15px 0;
+    padding: calc(15px + env(safe-area-inset-top)) 0 15px;
 }
 
 .nav-wrapper {
@@ -1123,10 +1123,18 @@ section {
     .container {
         padding: 0 20px;
     }
+
+    .navbar {
+        padding: calc(10px + env(safe-area-inset-top)) 0 10px;
+    }
+
+    .site-logo {
+        height: 60px;
+    }
     
     .nav-menu {
         position: fixed;
-        top: 90px;
+        top: 80px;
         left: -100%;
         flex-direction: column;
         background: var(--bg-white);

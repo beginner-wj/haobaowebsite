@@ -253,21 +253,29 @@ function initMetalPrices() {
     const xagEl = document.getElementById('priceXAGUSD');
     if (!xauEl || !xagEl) return;
 
+    const cacheKey = 'metal_prices_cache';
+
+    const readCache = () => {
+        try {
+            const cacheRaw = localStorage.getItem(cacheKey);
+            if (!cacheRaw) return null;
+            const cache = JSON.parse(cacheRaw);
+            if (cache && (cache.xauusd || cache.xagusd)) {
+                return cache;
+            }
+            return null;
+        } catch (e) {
+            return null;
+        }
+    };
+
     // 期望返回格式：{ xauusd: number, xagusd: number, timestamp?: string }
     const fetcher = async () => {
         // 简单的“每天一次”缓存，避免超过免费额度
         const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-        const cacheKey = 'metal_prices_cache';
-        const cacheRaw = localStorage.getItem(cacheKey);
-        if (cacheRaw) {
-            try {
-                const cache = JSON.parse(cacheRaw);
-                if (cache.date === today && cache.xauusd && cache.xagusd) {
-                    return cache;
-                }
-            } catch (e) {
-                // ignore parse error
-            }
+        const cache = readCache();
+        if (cache && cache.date === today && (cache.xauusd || cache.xagusd)) {
+            return cache;
         }
 
         const res = await fetch('/prices');
@@ -304,6 +312,17 @@ function initMetalPrices() {
     };
 
     const setFallback = () => {
+        const cache = readCache();
+        if (cache) {
+            if (cache.xauusd) xauEl.textContent = formatUsd(cache.xauusd);
+            if (cache.xagusd) xagEl.textContent = formatUsd(cache.xagusd);
+            return;
+        }
+
+        // 如果页面上已经有值（例如上一次刷新成功），不要在失败时清空
+        const hasDisplayed = (el) => (el.textContent || '').trim() && (el.textContent || '').trim() !== 'Loading…';
+        if (hasDisplayed(xauEl) || hasDisplayed(xagEl)) return;
+
         xauEl.textContent = '—';
         xagEl.textContent = '—';
     };
@@ -323,6 +342,8 @@ function initMetalPrices() {
         }
     };
 
+    // 先尝试渲染缓存（即使过期），保证有内容可见
+    setFallback();
     refresh();
     // 每 60 秒尝试刷新一次（如果你启用 fetcher）
     setInterval(refresh, 60_000);
