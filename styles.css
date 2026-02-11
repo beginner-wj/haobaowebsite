@@ -1134,7 +1134,7 @@ section {
     
     .nav-menu {
         position: fixed;
-        top: 80px;
+        top: calc(80px + env(safe-area-inset-top));
         left: -100%;
         flex-direction: column;
         background: var(--bg-white);
@@ -1154,7 +1154,7 @@ section {
     }
     
     .hero {
-        padding: 90px 0 50px;
+        padding: calc(110px + env(safe-area-inset-top)) 0 50px;
     }
 
     .hero-title {
