@@ -411,15 +411,16 @@ function initGoldPricingPage() {
         return data;
     };
 
-    // 格式化时间：ISO 字符串 → "YYYY-MM-DD HH:mm"
+    // 格式化时间：ISO 字符串 → "YYYY-MM-DD HH:mm SGT"（新加坡时间，与图1 风格一致）
     const formatTime = (iso) => {
         if (!iso) return '—';
-        // 已格式化的（如新浪的 "2026-09-24 15:30:01"）直接返回
-        if (/^\d{4}-\d{2}-\d{2}/.test(iso) && iso.includes(':')) return iso;
+        // 已是格式化文本（如新浪 "2026-09-24 15:30:01"）或纯日期（"2026-09-23"）直接返回
+        if (/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/.test(iso)) return iso;
         const d = new Date(iso);
         if (isNaN(d.getTime())) return iso;
         const pad = (n) => String(n).padStart(2, '0');
-        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        const sgt = new Date(d.getTime() + 8 * 3600 * 1000); // UTC+8（新加坡）
+        return `${sgt.getUTCFullYear()}-${pad(sgt.getUTCMonth() + 1)}-${pad(sgt.getUTCDate())} ${pad(sgt.getUTCHours())}:${pad(sgt.getUTCMinutes())} SGT`;
     };
 
     // 保留两位小数（与图1 风格一致）
