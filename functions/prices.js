@@ -115,8 +115,12 @@ async function fetchShanghaiBenchmark() {
     const ts = num(last[0]);
     const price = num(last[1]);
     if (ts === null || price === null) return null;
-    const d = new Date(ts);
-    return { price, date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` };
+    // SGE 时间戳按北京时间 00:00 存储（即 16:00 UTC）；按 UTC+8 取日期，避免 Worker（UTC）少一天
+    const d = new Date(ts + 8 * 3600 * 1000);
+    return {
+      price,
+      date: `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`
+    };
   };
   const am = lastOf(data.zp);
   const pm = lastOf(data.wp);
