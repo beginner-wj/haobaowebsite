@@ -110,8 +110,11 @@ function initNavActive() {
         });
         
         navLinks.forEach(link => {
+            const href = link.getAttribute('href') || '';
+            // 页面链接（如 gold-pricing.html）不参与锚点 active 管理，保留其自身状态
+            if (!href.startsWith('#')) return;
             link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
+            if (href === `#${current}`) {
                 link.classList.add('active');
             }
         });
@@ -230,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animateNumbers();
     initAboutTabs();
     initMetalPrices();
+    initGoldPricingPage();
     
     // 语言切换按钮事件
     const langToggle = document.getElementById('langToggle');
@@ -348,4 +352,239 @@ function initMetalPrices() {
     // 每 60 秒尝试刷新一次（如果你启用 fetcher）
     setInterval(refresh, 60_000);
 }
+
+// ==================== 金价行情页（gold-pricing.html） ====================
+// 渲染 Market Reference Prices 表格与 BUY/SELL 自有报价；数据来自 /prices 聚合接口
+function initGoldPricingPage() {
+    const table = document.getElementById('marketTable');
+    if (!table) return; // 非金价行情页
+
+    const CACHE_KEY = 'gold_pricing_cache';
+
+    // 列定义（顺序与用户最新表格一致）
+    const COLUMNS = [
+        { key: 'xauusd',     unit: 'usd' },
+        { key: 'sge_au9999', unit: 'cny' },
+        { key: 'sh_am',      unit: 'cny' },
+        { key: 'sh_pm',      unit: 'cny' },
+        { key: 'lbma_am',    unit: 'usd' },
+        { key: 'lbma_pm',    unit: 'usd' }
+    ];
+
+    // 行定义：USD/g、CNY/g、USD/troy oz、CNY/troy oz，以及仅 SGD Au99.99 列显示的 SGD/g、SGD/troy oz
+    const ROWS = [
+        { key: 'usd_g', i18n: 'goldpricing.market.row.usd_g', kind: 'num' },
+        { key: 'cny_g', i18n: 'goldpricing.market.row.cny_g', kind: 'num' },
+        { key: 'usd_oz', i18n: 'goldpricing.market.row.usd_oz', kind: 'num' },
+        { key: 'cny_oz', i18n: 'goldpricing.market.row.cny_oz', kind: 'num' },
+        { key: 'sgd_g', i18n: 'goldpricing.market.row.sgd_g', kind: 'num-sgd' },
+        { key: 'sgd_oz', i18n: 'goldpricing.market.row.sgd_oz', kind: 'num-sgd' },
+        { key: 'lastUpdated', i18n: 'goldpricing.market.row.last_updated', kind: 'time' },
+        { key: 'source', i18n: 'goldpricing.market.row.source', kind: 'source' }
+    ];
+
+    const readCache = () => {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const cache = JSON.parse(raw);
+            if (cache && cache.updatedAt) return cache;
+            return null;
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const saveCache = (data) => {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        } catch (e) {
+            // 忽略本地存储错误
+        }
+    };
+
+    const fetchData = async () => {
+        const res = await fetch('/prices');
+        if (!res.ok) throw new Error('Prices endpoint failed');
+        const data = await res.json();
+        if (!data || !data.markets) throw new Error('Invalid payload');
+        return data;
+    };
+
+    // 格式化时间：ISO 字符串 → "YYYY-MM-DD HH:mm"
+    const formatTime = (iso) => {
+        if (!iso) return '—';
+        // 已格式化的（如新浪的 "2026-09-24 15:30:01"）直接返回
+        if (/^\d{4}-\d{2}-\d{2}/.test(iso) && iso.includes(':')) return iso;
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    // 保留两位小数（与图1 风格一致）
+    const fmt2 = (v) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        return n.toFixed(2);
+    };
+
+    const renderRowLabel = (el, key) => {
+        const label = el.querySelector('.gp-row-label');
+        if (!label) return;
+        label.setAttribute('data-i18n', key); // 让语言切换时也能自动翻译
+        if (translations[currentLang] && translations[currentLang][key]) {
+            label.textContent = translations[currentLang][key];
+        }
+    };
+
+    const render = (data) => {
+        // ---- BUY / SELL 卡片 ----
+        const q = data.quotes || {};
+        const setQuote = (id, v, digits) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const n = Number(v);
+            el.textContent = Number.isFinite(n) ? n.toFixed(digits) : '—';
+        };
+        setQuote('quoteBuyUsdG', q.buy && q.buy.usd_g, 2);
+        setQuote('quoteBuyUsdOz', q.buy && q.buy.usd_oz, 2);
+        setQuote('quoteSellUsdG', q.sell && q.sell.usd_g, 2);
+        setQuote('quoteSellUsdOz', q.sell && q.sell.usd_oz, 2);
+        const buyUpdated = document.getElementById('quoteBuyUpdated');
+        const sellUpdated = document.getElementById('quoteSellUpdated');
+        if (buyUpdated) buyUpdated.textContent = formatTime(q.buy && q.buy.lastUpdated);
+        if (sellUpdated) sellUpdated.textContent = formatTime(q.sell && q.sell.lastUpdated);
+
+        // ---- 汇率脚注 ----
+        const fxNote = document.getElementById('fxNote');
+        if (fxNote) {
+            const fx = data.fx;
+            if (fx && fx.usd_cny) {
+                const label = translations[currentLang] && translations[currentLang].goldpricing
+                    ? translations[currentLang].goldpricing.fxnote
+                    : '** USDCNY = {rate} (last updated {time})';
+                const time = formatTime(fx.updatedAt);
+                fxNote.textContent = label.replace('{rate}', fx.usd_cny.toFixed(4)).replace('{time}', time);
+            } else {
+                fxNote.textContent = '** USDCNY = —';
+            }
+        }
+
+        // ---- Market Reference Prices 表格 ----
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        ROWS.forEach((row) => {
+            const tr = document.createElement('tr');
+            const th = document.createElement('th');
+            th.scope = 'row';
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'gp-row-label';
+            th.appendChild(labelSpan);
+            tr.appendChild(th);
+            renderRowLabel(th, row.i18n);
+
+            COLUMNS.forEach((col) => {
+                const td = document.createElement('td');
+                const market = data.markets[col.key] || {};
+                if (row.kind === 'num' || row.kind === 'num-sgd') {
+                    // 非 SGD 行在非 Au99.99 列显示占位；SGD 行只在 Au99.99 列显示
+                    const isSgdRow = row.kind === 'num-sgd';
+                    const showSgdOnly = col.key === 'sge_au9999';
+                    if (isSgdRow && !showSgdOnly) {
+                        td.textContent = '—';
+                        td.classList.add('gp-empty');
+                    } else {
+                        const v = market[row.key];
+                        td.textContent = fmt2(v);
+                        td.classList.add('gp-num');
+                        if (v === null || v === undefined) td.classList.add('gp-empty');
+                    }
+                } else if (row.kind === 'time') {
+                    td.textContent = market.date || formatTime(market.lastUpdated);
+                    if (!td.textContent || td.textContent === '—') td.classList.add('gp-empty');
+                } else if (row.kind === 'source') {
+                    const src = data.sources ? data.sources[col.key] : null;
+                    if (src) {
+                        const a = document.createElement('a');
+                        a.href = src;
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                        a.textContent = src.replace(/^https?:\/\/(www\.)?/, '');
+                        a.className = 'gp-src';
+                        td.appendChild(a);
+                    } else {
+                        td.textContent = '—';
+                        td.classList.add('gp-empty');
+                    }
+                }
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+    };
+
+    // ---- Data & Methodology ----
+    const renderMethodology = () => {
+        const list = document.getElementById('methodologyList');
+        if (!list) return;
+        const items = [
+            { i18n: 'goldpricing.methodology.item.xau', url: 'https://www.goldapi.io' },
+            { i18n: 'goldpricing.methodology.item.au9999', url: 'https://en.sge.com.cn/data_DelayedQuotes' },
+            { i18n: 'goldpricing.methodology.item.sh', url: 'https://en.sge.com.cn/data_BenchmarkPrice' },
+            { i18n: 'goldpricing.methodology.item.lbma', url: 'https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices' },
+            { i18n: 'goldpricing.methodology.item.fx', url: 'https://open.er-api.com' },
+            { i18n: 'goldpricing.methodology.item.convert', url: null }
+        ];
+        list.innerHTML = '';
+        items.forEach((item) => {
+            const li = document.createElement('li');
+            const text = translations[currentLang] && translations[currentLang][item.i18n]
+                ? translations[currentLang][item.i18n]
+                : item.i18n;
+            if (item.url) {
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = text;
+                li.appendChild(a);
+            } else {
+                li.textContent = text;
+            }
+            list.appendChild(li);
+        });
+    };
+
+    const methodologyToggle = document.getElementById('methodologyToggle');
+    if (methodologyToggle) {
+        methodologyToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const box = document.getElementById('methodologyBox');
+            if (box) box.hidden = !box.hidden;
+        });
+    }
+
+    const refresh = async () => {
+        try {
+            const data = await fetchData();
+            saveCache(data);
+            render(data);
+        } catch (e) {
+            const cache = readCache();
+            if (cache) render(cache);
+        }
+    };
+
+    // 首屏先用缓存兜底，再拉取
+    const cache = readCache();
+    if (cache) render(cache);
+    renderMethodology();
+    refresh();
+    setInterval(refresh, 60_000);
+}
+
 

@@ -1256,3 +1256,323 @@ section {
 html {
     scroll-behavior: smooth;
 }
+
+/* ==================== 金价行情页（gold-pricing.html） ==================== */
+.gp-hero {
+    padding: 190px 0 70px;
+    background: linear-gradient(180deg, var(--bg-white) 0%, var(--bg-beige) 100%);
+    text-align: center;
+}
+
+.gp-eyebrow {
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+.gp-title {
+    font-size: 46px;
+    line-height: 1.15;
+    color: var(--text-black);
+    margin: 0 0 16px;
+    font-weight: 700;
+}
+
+.gp-subtitle {
+    font-size: 18px;
+    color: var(--text-gray);
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* 自有报价区 */
+.gp-quotes {
+    padding: 70px 0;
+    background: var(--bg-beige);
+}
+
+.gp-quotes-head {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.gp-quotes-title {
+    font-size: 30px;
+    color: var(--text-black);
+    margin: 0 0 6px;
+}
+
+.gp-quotes-subtitle {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin: 0;
+}
+
+.gp-quotes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.gp-quote-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 30px 28px;
+    box-shadow: 0 6px 24px rgba(26, 26, 26, 0.06);
+}
+
+.gp-quote-buy {
+    border-top: 4px solid #2e8b57;
+}
+
+.gp-quote-sell {
+    border-top: 4px solid var(--gold-color);
+}
+
+.gp-quote-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.gp-quote-tag {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.gp-quote-buy .gp-quote-tag { color: #2e8b57; }
+.gp-quote-sell .gp-quote-tag { color: var(--gold-dark); }
+
+.gp-quote-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-gray);
+    background: var(--bg-beige);
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+.gp-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2e8b57;
+    animation: gp-pulse 1.6s infinite;
+}
+
+@keyframes gp-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.35; }
+    100% { opacity: 1; }
+}
+
+.gp-quote-desc {
+    font-size: 14px;
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin: 0 0 22px;
+}
+
+.gp-quote-values {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.gp-quote-value {
+    background: var(--bg-beige);
+    border-radius: 10px;
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.gp-quote-unit {
+    display: block;
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.gp-quote-num {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-black);
+}
+
+.gp-quote-updated {
+    font-size: 12px;
+    color: var(--text-gray);
+    text-align: center;
+    margin: 0;
+}
+
+/* Market Reference Prices 表格 */
+.gp-market {
+    padding: 70px 0 40px;
+    background: var(--bg-white);
+}
+
+.gp-market-head {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.gp-market-title {
+    font-size: 30px;
+    color: var(--text-black);
+    margin: 0 0 6px;
+}
+
+.gp-market-subtitle {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin: 0;
+}
+
+.gp-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.gp-table {
+    width: 100%;
+    min-width: 960px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.gp-table th,
+.gp-table td {
+    border: 1px solid var(--border-light);
+    padding: 12px 14px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.gp-table thead th {
+    background: var(--text-black);
+    color: var(--bg-white);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.gp-table tbody tr:nth-child(even) {
+    background: var(--bg-beige);
+}
+
+.gp-table tbody th {
+    background: var(--bg-white);
+    font-weight: 600;
+    text-align: left;
+    color: var(--text-black);
+    border: 1px solid var(--border-light);
+    padding: 12px 14px;
+}
+
+.gp-table .gp-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+
+.gp-table .gp-src {
+    font-size: 12px;
+    color: #0066cc;
+    word-break: break-all;
+    white-space: normal;
+    min-width: 120px;
+}
+
+.gp-table .gp-empty {
+    color: var(--text-gray);
+}
+
+.gp-note {
+    font-size: 13px;
+    color: var(--text-gray);
+    margin: 14px 0 4px;
+}
+
+/* 免责声明与数据方法 */
+.gp-disclaimer {
+    padding: 50px 0 70px;
+    background: var(--bg-beige);
+}
+
+.gp-disclaimer-text {
+    font-size: 13px;
+    color: var(--text-gray);
+    line-height: 1.7;
+    max-width: 900px;
+    margin: 0 auto 18px;
+}
+
+.gp-methodology {
+    text-align: center;
+    margin: 0 0 20px;
+}
+
+.gp-methodology a {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.gp-methodology-box {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 26px 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.gp-methodology-box h3 {
+    font-size: 18px;
+    margin: 0 0 14px;
+}
+
+.gp-methodology-box ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--text-gray);
+    line-height: 1.8;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .gp-hero {
+        padding: 150px 0 50px;
+    }
+    .gp-title {
+        font-size: 32px;
+    }
+    .gp-quotes-grid {
+        grid-template-columns: 1fr;
+    }
+    .gp-quote-values {
+        grid-template-columns: 1fr;
+    }
+}
+
