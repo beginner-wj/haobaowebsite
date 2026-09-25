@@ -371,14 +371,14 @@ function initGoldPricingPage() {
         { key: 'lbma_pm',    unit: 'usd' }
     ];
 
-    // 行定义：USD/g、CNY/g、USD/troy oz、CNY/troy oz，以及仅 SGD Au99.99 列显示的 SGD/g、SGD/troy oz
+    // 行定义：USD/g、CNY/g、USD/troy oz、CNY/troy oz、SGD/g、SGD/troy oz（所有列均显示）
     const ROWS = [
         { key: 'usd_g', i18n: 'goldpricing.market.row.usd_g', kind: 'num' },
         { key: 'cny_g', i18n: 'goldpricing.market.row.cny_g', kind: 'num' },
         { key: 'usd_oz', i18n: 'goldpricing.market.row.usd_oz', kind: 'num' },
         { key: 'cny_oz', i18n: 'goldpricing.market.row.cny_oz', kind: 'num' },
-        { key: 'sgd_g', i18n: 'goldpricing.market.row.sgd_g', kind: 'num-sgd' },
-        { key: 'sgd_oz', i18n: 'goldpricing.market.row.sgd_oz', kind: 'num-sgd' },
+        { key: 'sgd_g', i18n: 'goldpricing.market.row.sgd_g', kind: 'num' },
+        { key: 'sgd_oz', i18n: 'goldpricing.market.row.sgd_oz', kind: 'num' },
         { key: 'lastUpdated', i18n: 'goldpricing.market.row.last_updated', kind: 'time' },
         { key: 'source', i18n: 'goldpricing.market.row.source', kind: 'source' }
     ];
@@ -491,18 +491,11 @@ function initGoldPricingPage() {
                 const td = document.createElement('td');
                 const market = data.markets[col.key] || {};
                 if (row.kind === 'num' || row.kind === 'num-sgd') {
-                    // 非 SGD 行在非 Au99.99 列显示占位；SGD 行只在 Au99.99 列显示
-                    const isSgdRow = row.kind === 'num-sgd';
-                    const showSgdOnly = col.key === 'sge_au9999';
-                    if (isSgdRow && !showSgdOnly) {
-                        td.textContent = '—';
-                        td.classList.add('gp-empty');
-                    } else {
-                        const v = market[row.key];
-                        td.textContent = fmt2(v);
-                        td.classList.add('gp-num');
-                        if (v === null || v === undefined) td.classList.add('gp-empty');
-                    }
+                    // 所有列均显示对应单位值（USD/CNY/SGD）；某市场缺该值或汇率失败时显示占位
+                    const v = market[row.key];
+                    td.textContent = fmt2(v);
+                    td.classList.add('gp-num');
+                    if (v === null || v === undefined) td.classList.add('gp-empty');
                 } else if (row.kind === 'time') {
                     td.textContent = market.date || formatTime(market.lastUpdated);
                     if (!td.textContent || td.textContent === '—') td.classList.add('gp-empty');

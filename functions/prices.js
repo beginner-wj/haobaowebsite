@@ -286,17 +286,21 @@ async function fetchFx() {
 
 // ---- 换算 ----
 
-// 以 USD/oz 与 USD/CNY 为基准，补齐各单位
+// 以 USD/oz 与 USD/CNY 为基准，补齐各单位（含 SGD）
 function convertUsdOz(usd_oz, fx) {
   if (usd_oz === null) return null;
   const usd_g = usd_oz / OZT;
   const cny_g = usd_g * fx.usd_cny;
   const cny_oz = usd_oz * fx.usd_cny;
+  const sgd_g = usd_g * fx.usd_sgd;
+  const sgd_oz = usd_oz * fx.usd_sgd;
   return {
     usd_oz: round(usd_oz, 2),
     usd_g: round(usd_g, 4),
     cny_g: round(cny_g, 4),
-    cny_oz: round(cny_oz, 2)
+    cny_oz: round(cny_oz, 2),
+    sgd_g: round(sgd_g, 4),
+    sgd_oz: round(sgd_oz, 2)
   };
 }
 
