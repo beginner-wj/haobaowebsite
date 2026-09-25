@@ -16,9 +16,20 @@ const FX_URL = 'https://open.er-api.com/v6/latest/USD';
 const SINA_AU9999_URL = 'https://hq.sinajs.cn/list=gds_AU9999';
 
 const GOLDAPI_BASE = 'https://www.goldapi.io/api';
+const GOLDPRICE_FALLBACK_BASE = 'https://api.gold-api.com/price'; // 免费备源（无需 key）
 
 // 每个请求的超时（毫秒）
 const FETCH_TIMEOUT_MS = 9000;
+
+// 各数据源缓存 TTL（秒）：避免每次刷新都请求上游 API
+// 金价（XAU/XAG）变化很慢（约一天一次），6 小时足够，同时把 goldapi 调用压到约 4 次/天/边缘
+const TTL = {
+  gold: 6 * 3600,     // goldapi / gold-api.com（XAU、XAG）
+  sge: 300,           // 上金所延迟行情（新浪，免费源，5 分钟）
+  benchmark: 3600,    // 上海金基准价 AM/PM（每日两次）
+  lbma: 3600,         // LBMA AM/PM（每日两次）
+  fx: 3600            // 汇率（每日更新）
+};
 
 // 带超时的 fetch
 async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
@@ -28,6 +39,39 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS)
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {
     clearTimeout(timer);
+  }
+}
+
+// 带缓存的 fetch：通过 caches.default 缓存上游响应 ttlSeconds 秒
+// （Cache API 的 match 不会按新鲜度过期，因此用 x-cached-at 头手动判断 TTL；无 caches 环境自动退化为直连）
+async function fetchCached(url, options = {}, ttlSeconds) {
+  const cache = typeof caches !== 'undefined' ? caches.default : null;
+  let cached = null;
+  if (cache) {
+    try {
+      const cacheKey = new Request(url, { method: 'GET' });
+      cached = await cache.match(cacheKey);
+      if (cached) {
+        const cachedAt = Number(cached.headers.get('x-cached-at') || 0);
+        if (cachedAt && Date.now() - cachedAt < ttlSeconds * 1000) {
+          return cached;
+        }
+      }
+    } catch (e) {
+      cached = null;
+    }
+  }
+  const res = await fetchWithTimeout(url, options);
+  if (!res.ok || !cache) return res;
+  try {
+    const headers = new Headers(res.headers);
+    headers.set('x-cached-at', String(Date.now()));
+    headers.set('Cache-Control', `public, max-age=${ttlSeconds}`);
+    const toCache = new Response(res.body, { status: res.status, headers });
+    await cache.put(new Request(url, { method: 'GET' }), toCache.clone());
+    return toCache;
+  } catch (e) {
+    return res; // 缓存写入失败不影响返回
   }
 }
 
@@ -45,33 +89,72 @@ const round = (v, digits = 2) => {
 
 // ---- 数据源抓取 ----
 
-// 1) XAU/USD 与 XAG/USD（goldapi.io，需要 GOLDAPI_KEY）
+// 免费备源 gold-api.com（无需 key）：单品种查询
+async function fetchGoldFromFallback(symbol) {
+  const res = await fetchCached(`${GOLDPRICE_FALLBACK_BASE}/${symbol}`, {}, TTL.gold);
+  if (!res.ok) return { ok: false, reason: `gold-api status ${res.status}` };
+  const data = await res.json();
+  const price = num(data && data.price);
+  if (price === null || price <= 0) return { ok: false, reason: 'gold-api no price' };
+  return { ok: true, usd_oz: price };
+}
+
+// 1) XAU/USD 与 XAG/USD：主源 goldapi.io（需 GOLDAPI_KEY），失败自动回退免费 gold-api.com
 async function fetchGoldPrices(env) {
   const key = env && env.GOLDAPI_KEY;
-  if (!key) return { ok: false, reason: 'Missing GOLDAPI_KEY' };
-  const [xauRes, xagRes] = await Promise.all([
-    fetchWithTimeout(`${GOLDAPI_BASE}/XAU/USD`, {
-      headers: { 'x-access-token': key, 'Content-Type': 'application/json' }
-    }),
-    fetchWithTimeout(`${GOLDAPI_BASE}/XAG/USD`, {
-      headers: { 'x-access-token': key, 'Content-Type': 'application/json' }
-    })
-  ]);
-  if (!xauRes.ok || !xagRes.ok) {
-    return { ok: false, reason: `goldapi status ${xauRes.status}/${xagRes.status}` };
+  let xauUsdOz = null;
+  let xagUsdOz = null;
+  let err = '';
+  let source = 'goldapi.io';
+
+  if (key) {
+    try {
+      const [xauRes, xagRes] = await Promise.all([
+        fetchCached(`${GOLDAPI_BASE}/XAU/USD`, {
+          headers: { 'x-access-token': key, 'Content-Type': 'application/json' }
+        }, TTL.gold),
+        fetchCached(`${GOLDAPI_BASE}/XAG/USD`, {
+          headers: { 'x-access-token': key, 'Content-Type': 'application/json' }
+        }, TTL.gold)
+      ]);
+      if (xauRes.ok && xagRes.ok) {
+        const [xauData, xagData] = await Promise.all([xauRes.json(), xagRes.json()]);
+        xauUsdOz = num(xauData.price) || num(xauData.price_gram_24k && xauData.price_gram_24k * OZT);
+        xagUsdOz = num(xagData.price) || num(xagData.price_gram_999 && xagData.price_gram_999 * OZT);
+      } else {
+        err = `goldapi status ${xauRes.status}/${xagRes.status}`;
+      }
+    } catch (e) {
+      err = String((e && e.message) || e);
+    }
+  } else {
+    err = 'Missing GOLDAPI_KEY';
   }
-  const [xauData, xagData] = await Promise.all([xauRes.json(), xagRes.json()]);
-  const xauUsdOz = num(xauData.price) || num(xauData.price_gram_24k && xauData.price_gram_24k * OZT);
-  const xagUsdOz = num(xagData.price) || num(xagData.price_gram_999 && xagData.price_gram_999 * OZT);
-  if (xauUsdOz === null) return { ok: false, reason: 'no xau price' };
-  return { ok: true, xau_usd_oz: xauUsdOz, xag_usd_oz: xagUsdOz };
+
+  // 任一缺失即回退免费备源（避免 goldapi 额度耗尽导致金价/银价一直加载失败）
+  if (xauUsdOz === null || xagUsdOz === null) {
+    const needXau = xauUsdOz === null;
+    const needXag = xagUsdOz === null;
+    const [fXau, fXag] = await Promise.all([
+      needXau ? fetchGoldFromFallback('XAU').catch((e) => ({ ok: false, reason: String((e && e.message) || e) })) : Promise.resolve({ ok: true }),
+      needXag ? fetchGoldFromFallback('XAG').catch((e) => ({ ok: false, reason: String((e && e.message) || e) })) : Promise.resolve({ ok: true })
+    ]);
+    if (needXau && fXau.ok) xauUsdOz = fXau.usd_oz;
+    if (needXag && fXag.ok) xagUsdOz = fXag.usd_oz;
+    if (needXau || needXag) source = 'gold-api.com';
+  }
+
+  if (xauUsdOz === null) {
+    return { ok: false, reason: err ? `${err}; fallback failed` : 'fallback failed' };
+  }
+  return { ok: true, xau_usd_oz: xauUsdOz, xag_usd_oz: xagUsdOz, source, error: err || null };
 }
 
 // 2) SGE Au99.99（新浪财经，延迟行情；主源）
 async function fetchSgeAu9999Sina() {
-  const res = await fetchWithTimeout(SINA_AU9999_URL, {
+  const res = await fetchCached(SINA_AU9999_URL, {
     headers: { Referer: 'https://finance.sina.com.cn' }
-  });
+  }, TTL.sge);
   if (!res.ok) return { ok: false, reason: `sina status ${res.status}` };
   const text = await res.text();
   // var hq_str_gds_AU9999="926.50,0,926.50,927.00,935.78,924.10,15:30:01,...,2026-09-24,沪金99";
@@ -88,7 +171,7 @@ async function fetchSgeAu9999Sina() {
 
 // 2') SGE Au99.99（上金所英文站延迟行情页；备源，HTML 表格）
 async function fetchSgeAu9999SgeHtml() {
-  const res = await fetchWithTimeout(SGE_QUOTES_URL);
+  const res = await fetchCached(SGE_QUOTES_URL, {}, TTL.sge);
   if (!res.ok) return { ok: false, reason: `sge quotes status ${res.status}` };
   const html = await res.text();
   // 行结构：<td>Au99.99</td><td>最新</td><td>最高</td><td>最低</td><td>开盘</td>
@@ -101,11 +184,13 @@ async function fetchSgeAu9999SgeHtml() {
 
 // 3) 上海金基准价 AM/PM（上金所图表接口，POST；zp=早盘价AM，wp=午盘价PM，单位 CNY/g）
 async function fetchShanghaiBenchmark() {
-  const res = await fetchWithTimeout(SGE_BENCHMARK_URL, {
+  // fetchCached 以 GET Request 作缓存键；用合成 URL 区分（实际请求仍是 POST）
+  const cacheKeyUrl = `${SGE_BENCHMARK_URL}?cached=post`;
+  const res = await fetchCached(cacheKeyUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
     body: new URLSearchParams({ start: '', end: '' })
-  });
+  }, TTL.benchmark);
   if (!res.ok) return { ok: false, reason: `sge benchmark status ${res.status}` };
   const data = await res.json();
   const lastOf = (arr) => {
@@ -130,7 +215,7 @@ async function fetchShanghaiBenchmark() {
 
 // 4) LBMA Gold Price AM/PM（LBMA 官方 today.json，USD/oz）
 async function fetchLbma() {
-  const res = await fetchWithTimeout(LBMA_TODAY_URL);
+  const res = await fetchCached(LBMA_TODAY_URL, {}, TTL.lbma);
   if (!res.ok) return { ok: false, reason: `lbma status ${res.status}` };
   const data = await res.json();
   const gold = data && data.gold;
@@ -160,7 +245,7 @@ async function fetchLbma() {
 
 // 5) 汇率：主源 open.er-api.com（每日更新，免 key）；备源 frankfurter.dev（ECB，T-1）
 async function fetchFxFromErApi() {
-  const res = await fetchWithTimeout(FX_URL);
+  const res = await fetchCached(FX_URL, {}, TTL.fx);
   if (!res.ok) return { ok: false, reason: `er-api status ${res.status}` };
   const data = await res.json();
   const cny = num(data.rates && data.rates.CNY);
@@ -176,7 +261,7 @@ async function fetchFxFromErApi() {
 }
 
 async function fetchFxFromFrankfurter() {
-  const res = await fetchWithTimeout('https://api.frankfurter.dev/v1/latest?base=USD&symbols=CNY,SGD');
+  const res = await fetchCached('https://api.frankfurter.dev/v1/latest?base=USD&symbols=CNY,SGD', {}, TTL.fx);
   if (!res.ok) return { ok: false, reason: `frankfurter status ${res.status}` };
   const data = await res.json();
   const cny = num(data.rates && data.rates.CNY);
@@ -254,8 +339,9 @@ export async function buildPayload(env) {
   const markets = {
     xauusd: {
       ...(gold.ok && fxData.ok ? convertUsdOz(gold.xau_usd_oz, fxData) : {}),
-      ...(gold.ok ? { lastUpdated: nowIso } : {}),
-      status: gold.ok ? 'live' : 'error'
+      ...(gold.ok ? { lastUpdated: nowIso, source: gold.source || 'goldapi.io' } : {}),
+      status: gold.ok ? 'live' : 'error',
+      ...(gold.ok ? {} : { error: gold.reason || 'unknown' })
     },
     sge_au9999: {
       ...(au9999Raw.ok && fxData.ok ? convertCnyG(au9999Raw.cny_g, fxData) : {}),
@@ -293,7 +379,8 @@ export async function buildPayload(env) {
     markets,
     quotes,
     sources: {
-      xauusd: 'https://www.goldapi.io',
+      // XAU 实际数据源：goldapi 失败回退 gold-api.com 时显示备源
+      xauusd: gold.ok && gold.source === 'gold-api.com' ? 'https://api.gold-api.com' : 'https://www.goldapi.io',
       sge_au9999: 'https://en.sge.com.cn/data_DelayedQuotes',
       sh_am: 'https://en.sge.com.cn/data_BenchmarkPrice',
       sh_pm: 'https://en.sge.com.cn/data_BenchmarkPrice',
@@ -310,8 +397,9 @@ export async function onRequest({ request, env, waitUntil }) {
   const commonHeaders = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    // 实时行情 30s 边缘缓存；上游失败时允许使用旧缓存（最多 1 天）
-    'Cache-Control': 'public, max-age=0, s-maxage=30, stale-if-error=86400'
+    // 行情 5 分钟边缘缓存（价格一天变化不大，5 分钟足够新鲜，同时大幅减少上游 API 调用）；
+    // 上游失败时允许使用旧缓存（最多 1 天）
+    'Cache-Control': 'public, max-age=0, s-maxage=300, stale-if-error=86400'
   };
 
   const cache = caches.default;
