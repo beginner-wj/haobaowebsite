@@ -383,14 +383,14 @@ function initGoldPricingPage() {
 
     const CACHE_KEY = 'gold_pricing_cache';
 
-    // 列定义（顺序与用户最新表格一致）
+    // 列定义（顺序与用户最新表格一致）；i18n 供手机端市场卡片复用列名
     const COLUMNS = [
-        { key: 'xauusd',     unit: 'usd' },
-        { key: 'sge_au9999', unit: 'cny' },
-        { key: 'sh_am',      unit: 'cny' },
-        { key: 'sh_pm',      unit: 'cny' },
-        { key: 'lbma_am',    unit: 'usd' },
-        { key: 'lbma_pm',    unit: 'usd' }
+        { key: 'xauusd',     unit: 'usd', i18n: 'goldpricing.market.col.xau' },
+        { key: 'sge_au9999', unit: 'cny', i18n: 'goldpricing.market.col.au9999' },
+        { key: 'sh_am',      unit: 'cny', i18n: 'goldpricing.market.col.sh_am' },
+        { key: 'sh_pm',      unit: 'cny', i18n: 'goldpricing.market.col.sh_pm' },
+        { key: 'lbma_am',    unit: 'usd', i18n: 'goldpricing.market.col.lbma_am' },
+        { key: 'lbma_pm',    unit: 'usd', i18n: 'goldpricing.market.col.lbma_pm' }
     ];
 
     // 行定义：USD/g、CNY/g、USD/troy oz、CNY/troy oz、SGD/g、SGD/troy oz（所有列均显示）
@@ -459,6 +459,70 @@ function initGoldPricingPage() {
         if (translations[currentLang] && translations[currentLang][key]) {
             label.textContent = translations[currentLang][key];
         }
+    };
+
+    // 手机端（≤768px）：每个市场一张卡片，替代横向滚动的表格；
+    // 桌面/平板仍用表格，两者由同一份数据渲染，CSS 按断点切换显示
+    const renderMarketCards = (data) => {
+        const root = document.getElementById('marketCards');
+        if (!root) return;
+        const t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
+
+        root.innerHTML = '';
+        COLUMNS.forEach((col) => {
+            const market = data.markets[col.key] || {};
+            const card = document.createElement('div');
+            card.className = 'gp-mcard';
+
+            const title = document.createElement('h3');
+            title.className = 'gp-mcard-title';
+            title.setAttribute('data-i18n', col.i18n); // 语言切换时由 updateLanguage 自动更新
+            title.textContent = t(col.i18n);
+            card.appendChild(title);
+
+            const rows = document.createElement('div');
+            rows.className = 'gp-mcard-rows';
+            ROWS.forEach((row) => {
+                const line = document.createElement('div');
+                line.className = 'gp-mcard-row';
+
+                const label = document.createElement('span');
+                label.className = 'gp-mcard-label';
+                label.setAttribute('data-i18n', row.i18n);
+                label.textContent = t(row.i18n);
+
+                const value = document.createElement('span');
+                value.className = 'gp-mcard-value';
+                if (row.kind === 'num' || row.kind === 'num-sgd') {
+                    const v = market[row.key];
+                    value.textContent = fmt2(v);
+                    if (v === null || v === undefined) value.classList.add('gp-empty');
+                } else if (row.kind === 'time') {
+                    value.textContent = market.date || formatTime(market.lastUpdated);
+                    if (!value.textContent || value.textContent === '—') value.classList.add('gp-empty');
+                } else if (row.kind === 'source') {
+                    const src = data.sources ? data.sources[col.key] : null;
+                    if (src) {
+                        const a = document.createElement('a');
+                        a.href = src;
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                        a.textContent = src.replace(/^https?:\/\/(www\.)?/, '');
+                        a.className = 'gp-mcard-src';
+                        value.appendChild(a);
+                    } else {
+                        value.textContent = '—';
+                        value.classList.add('gp-empty');
+                    }
+                }
+
+                line.appendChild(label);
+                line.appendChild(value);
+                rows.appendChild(line);
+            });
+            card.appendChild(rows);
+            root.appendChild(card);
+        });
     };
 
     const render = (data) => {
@@ -541,6 +605,9 @@ function initGoldPricingPage() {
 
             tbody.appendChild(tr);
         });
+
+        // 手机端卡片与表格同步渲染
+        renderMarketCards(data);
     };
 
     // ---- Data & Methodology ----

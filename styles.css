@@ -1459,6 +1459,11 @@ html {
     -webkit-overflow-scrolling: touch;
 }
 
+/* 手机端市场卡片容器：桌面/平板隐藏（用表格），≤768px 由文件末尾断点块切换显示 */
+.gp-market-cards {
+    display: none;
+}
+
 .gp-table {
     width: 100%;
     min-width: 960px;
@@ -1729,9 +1734,13 @@ body.menu-open {
         max-height: 72vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 8px 20px calc(18px + env(safe-area-inset-bottom));
+        /* 基础样式的 align-items: center 是给桌面横向菜单用的；纵向菜单若继承它，
+           菜单项会缩成内容宽度居中、分隔线只剩中间一截，面板显得又宽又空。
+           改回 stretch：每行撑满整行、文字靠左，观感立刻扎实 */
+        align-items: stretch;
+        padding: 6px 20px calc(14px + env(safe-area-inset-bottom));
         gap: 0;
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -1746,11 +1755,12 @@ body.menu-open {
         transform: translateY(0);
         transition: transform 0.25s ease, opacity 0.25s ease;
     }
-    /* 菜单项：整行可点、有分隔线、字号加大 */
+    /* 菜单项：整行可点、左对齐、分隔线拉通；行高压到 ~45px，整块面板更矮更实 */
     .nav-menu a {
         display: block;
-        padding: 14px 4px;
-        font-size: 16px;
+        padding: 11px 4px;
+        font-size: 15px;
+        line-height: 1.4;
         border-bottom: 1px solid var(--border-light);
     }
     .nav-menu li:last-child a {
@@ -1940,5 +1950,103 @@ body.menu-open {
     .about-btn:hover {
         transform: none;
         box-shadow: none;
+    }
+}
+
+/* ==========================================================================
+   金价行情页手机端强化 —— 置于文件末尾以覆盖前面对应规则
+   7 列市场参考价表格在手机上横向滚动一屏只能看到一个市场，
+   ≤768px 改为“每市场一张卡片”，全部换算值一屏可读；
+   BUY/SELL 报价卡同步收紧纵向空间
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 表格 → 卡片 */
+    .gp-table-wrap {
+        display: none;
+    }
+    .gp-market-cards {
+        display: grid;
+        gap: 12px;
+    }
+    .gp-mcard {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 14px 16px 8px;
+        box-shadow: 0 4px 14px rgba(26, 26, 26, 0.05);
+    }
+    .gp-mcard-title {
+        margin: 0 0 6px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-black);
+        line-height: 1.4;
+    }
+    .gp-mcard-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 7px 0;
+        border-bottom: 1px dashed var(--border-light);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .gp-mcard-row:last-child {
+        border-bottom: none;
+    }
+    .gp-mcard-label {
+        color: var(--text-gray);
+        flex-shrink: 0;
+    }
+    .gp-mcard-value {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+    .gp-mcard-value.gp-empty {
+        font-weight: 400;
+    }
+    .gp-mcard-src {
+        color: #0066cc;
+        word-break: break-all;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    /* BUY/SELL 报价卡：收紧纵向空间，首屏更快看到核心数值 */
+    .gp-quotes-head {
+        margin-bottom: 22px;
+    }
+    .gp-quotes-grid {
+        gap: 14px;
+    }
+    .gp-quote-card {
+        padding: 18px 16px 14px;
+    }
+    .gp-quote-header {
+        margin-bottom: 8px;
+    }
+    .gp-quote-tag {
+        font-size: 17px;
+    }
+    .gp-quote-desc {
+        font-size: 13px;
+        line-height: 1.55;
+        margin-bottom: 12px;
+    }
+    .gp-quote-values {
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .gp-quote-value {
+        padding: 10px 8px;
+    }
+    .gp-quote-num {
+        font-size: 22px;
+    }
+    .gp-market-head {
+        margin-bottom: 20px;
     }
 }
