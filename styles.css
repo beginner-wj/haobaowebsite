@@ -1649,3 +1649,296 @@ html {
         --logo-cap: 52vw;
     }
 }
+
+/* ==========================================================================
+   移动端体验强化 —— 必须放在文件最末尾（覆盖前面所有同名规则）
+   解决：菜单定位写死 80px 与品牌 logo 高度不匹配、iOS 刘海屏 env() 不生效、
+        锚点被固定导航栏遮挡、触控目标过小、菜单无遮罩/无滚动锁定、
+        金价表格横向滚动难以阅读等问题
+   ========================================================================== */
+
+/* 图片全局兜底：任何图片都不会把容器撑出横向滚动条 */
+img {
+    max-width: 100%;
+}
+
+/* iOS 横屏时禁止自动放大字号；滚动锚点预留固定导航栏的高度，避免标题被遮住 */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: 150px;
+}
+@media (max-width: 1024px) { html { scroll-padding-top: 130px; } }
+@media (max-width: 768px)  { html { scroll-padding-top: 92px; } }
+@media (max-width: 480px)  { html { scroll-padding-top: 96px; } }
+
+/* 触控反馈更克制 */
+a, button {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ---- 移动端菜单遮罩 ---- */
+.nav-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 26, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+    z-index: 999; /* 导航栏是 1000，遮罩压住内容但让汉堡按钮可点 */
+}
+.nav-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.25s ease;
+}
+body.menu-open {
+    overflow: hidden;
+}
+
+/* ---- 手机断点（≤768px） ---- */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 20px;
+    }
+
+    /* 导航：触控目标加大（Apple/Google 建议 ≥44px） */
+    .nav-actions {
+        gap: 6px;
+    }
+    .lang-toggle {
+        min-width: 44px;
+        min-height: 40px;
+        justify-content: center;
+        padding: 8px 10px;
+    }
+    .mobile-menu-toggle {
+        padding: 10px 8px;
+    }
+
+    /* 菜单改为锚定在导航栏下沿（top:100%），
+       不再写死 80px —— 两个品牌 logo 高度不同也能严丝合缝 */
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 72vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px 20px calc(18px + env(safe-area-inset-bottom));
+        gap: 0;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition: transform 0.25s ease, opacity 0.25s ease, visibility 0s linear 0.25s;
+    }
+    .nav-menu.active {
+        left: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    /* 菜单项：整行可点、有分隔线、字号加大 */
+    .nav-menu a {
+        display: block;
+        padding: 14px 4px;
+        font-size: 16px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .nav-menu li:last-child a {
+        border-bottom: none;
+    }
+
+    /* 汉堡按钮 → X 动画 */
+    .mobile-menu-toggle.active span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-menu-toggle.active span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* Hero：手机上不再强撑 90vh，图片不再越界 102% */
+    .hero {
+        min-height: auto;
+        padding: calc(96px + env(safe-area-inset-top)) 0 40px;
+    }
+    .hero-content {
+        max-width: none;
+    }
+    .hero-title {
+        font-size: clamp(26px, 6.8vw, 34px);
+        margin-bottom: 16px;
+    }
+    .hero-subtitle {
+        font-size: 15px;
+        margin-bottom: 28px;
+    }
+    .hero-buttons {
+        gap: 12px;
+    }
+    .btn {
+        padding: 13px 28px;
+        min-height: 44px;
+    }
+    .hero-gold-card {
+        border-radius: 14px;
+    }
+    .hero-gold-image {
+        width: 100%;
+        transform: none;
+    }
+
+    /* 区块留白收紧，标题流式缩放 */
+    section {
+        padding: 56px 0;
+    }
+    .about, .products, .storage, .contact {
+        padding: 64px 0;
+    }
+    .education {
+        padding: 80px 0;
+    }
+    .section-header {
+        margin-bottom: 36px;
+    }
+    .section-title {
+        font-size: clamp(26px, 6.5vw, 32px);
+    }
+    .section-subtitle {
+        font-size: 15px;
+    }
+
+    /* 关于我们：内容盒内边距收紧，去掉 400px 最小高度留白 */
+    .about-wrapper {
+        gap: 28px;
+    }
+    .about-btn {
+        padding: 15px 40px 15px 20px;
+        font-size: 15px;
+    }
+    .about-content-box {
+        padding: 24px 18px;
+        min-height: 0;
+    }
+    .content-panel p, .core-values li, .product-list li {
+        font-size: 15px;
+        line-height: 1.85;
+    }
+
+    /* 产品区 */
+    .products-divider {
+        margin: 32px 0;
+    }
+    .products-detail {
+        gap: 22px;
+    }
+    .product-metal-image {
+        width: 130px;
+    }
+    .product-description h3,
+    .otc-approach h3,
+    .contact-section h3 {
+        font-size: 22px;
+    }
+    .pricing-box {
+        width: 100%;
+        padding: 20px;
+    }
+
+    /* 页脚 */
+    .footer {
+        padding: 44px 0 24px;
+    }
+    .footer-content {
+        gap: 28px;
+        margin-bottom: 28px;
+    }
+
+    /* ---- 金价行情页 ---- */
+    .gp-hero {
+        padding: calc(110px + env(safe-area-inset-top)) 0 40px;
+    }
+    .gp-title {
+        font-size: clamp(26px, 7vw, 32px);
+    }
+    .gp-subtitle {
+        font-size: 15px;
+    }
+    .gp-quotes, .gp-market, .gp-disclaimer {
+        padding: 48px 0;
+    }
+    .gp-quotes-title, .gp-market-title {
+        font-size: 24px;
+    }
+    .gp-quote-card {
+        padding: 22px 18px;
+    }
+    .gp-quote-num {
+        font-size: 24px;
+    }
+    .gp-methodology-box {
+        padding: 20px 16px;
+    }
+}
+
+/* ---- 小屏手机（≤480px） ---- */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    /* Haobao 默认 logo 在小屏上 80px 偏大，压到 64px（pioneerhorizon 有自己的 44px 覆写） */
+    .site-logo {
+        height: var(--logo-h-480, 64px);
+    }
+
+    .hero-buttons {
+        gap: 10px;
+    }
+    .about-btn {
+        padding: 14px 34px 14px 16px;
+        font-size: 14px;
+    }
+    .product-metal-image {
+        width: 110px;
+    }
+    /* 金价表格：窄屏进一步减小单元格内边距，配合横向滚动 */
+    .gp-table th, .gp-table td {
+        padding: 10px 10px;
+    }
+}
+
+/* ---- 金价表格：横向滚动时首列吸左，行名始终可见 ---- */
+.gp-table thead th:first-child,
+.gp-table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+.gp-table thead th:first-child {
+    z-index: 2;
+}
+.gp-table tbody th {
+    box-shadow: 2px 0 0 var(--border-light);
+}
+
+/* ---- 触屏设备：关闭 hover 位移效果，避免“粘性悬停” ---- */
+@media (hover: none) {
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .about-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

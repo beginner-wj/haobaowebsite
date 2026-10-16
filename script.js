@@ -78,19 +78,34 @@ function initNavbar() {
 function initMobileMenu() {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const navMenu = document.getElementById('navMenu');
-    
+    const backdrop = document.getElementById('navBackdrop');
+
+    const setMenu = (open) => {
+        navMenu.classList.toggle('active', open);
+        mobileMenuToggle.classList.toggle('active', open);
+        mobileMenuToggle.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('menu-open', open);
+        if (backdrop) backdrop.classList.toggle('active', open);
+    };
+
     if (mobileMenuToggle && navMenu) {
         mobileMenuToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            mobileMenuToggle.classList.toggle('active');
+            setMenu(!navMenu.classList.contains('active'));
         });
-        
+
+        // 点击遮罩关闭
+        if (backdrop) {
+            backdrop.addEventListener('click', () => setMenu(false));
+        }
+
         // 点击菜单项后关闭菜单
         navMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                mobileMenuToggle.classList.remove('active');
-            });
+            link.addEventListener('click', () => setMenu(false));
+        });
+
+        // 旋转/放大到桌面宽度时复位，避免菜单卡在打开状态
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) setMenu(false);
         });
     }
 }
