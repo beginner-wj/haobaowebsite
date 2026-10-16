@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# 内部文档（不随代码发布）
+doc/
+
+# 本地环境
+node_modules/
+.env

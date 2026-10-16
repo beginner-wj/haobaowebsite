@@ -63,7 +63,12 @@ body {
 
 .site-logo {
     /* 再放大导航栏主 logo，让小字清晰可见 */
-    height: 110px;
+    /* 高度按品牌可变：各 logo 宽高比不同（Haobao 2.58:1、Pioneer Horizon 4.93:1），
+       用同一个高度会让宽 logo 把导航栏挤爆，故抽出变量按品牌覆写 */
+    height: var(--logo-h, 110px);
+    /* 宽度上限：object-fit 为 contain 时实际尺寸取 height 与 max-width 的较小值，
+       窗口过窄时 logo 等比缩小，不会把导航菜单挤出屏幕 */
+    max-width: var(--logo-cap, none);
     width: auto;
     object-fit: contain;
     display: block;
@@ -71,7 +76,7 @@ body {
 
 .site-logo.small {
     /* 进一步放大页脚 logo，让小字清晰可见 */
-    height: 95px;
+    height: var(--logo-h-small, 95px);
     width: auto;
     display: block;
     /* 向左右多扩一点，再整体左移 2px，把右侧白线完全裁掉 */
@@ -1059,7 +1064,7 @@ section {
     }
 
     .site-logo {
-        height: 90px;
+        height: var(--logo-h-1024, 90px);
     }
 
     .hero-wrapper {
@@ -1129,7 +1134,7 @@ section {
     }
 
     .site-logo {
-        height: 60px;
+        height: var(--logo-h-768, 60px);
     }
     
     .nav-menu {
@@ -1218,7 +1223,7 @@ section {
 
 @media (max-width: 480px) {
     .site-logo {
-        height: 80px;
+        height: var(--logo-h-480, 80px);
     }
     .hero-title {
         font-size: 28px;
@@ -1576,3 +1581,71 @@ html {
     }
 }
 
+
+/* ==========================================================================
+   多品牌 / 导航拥挤修正 —— 必须放在文件末尾
+   （本文件在原「响应式设计」块里已有一个 @media (max-width: 1024px)，
+     会把 .nav-wrapper gap 设为 20px、并把 .site-logo 高度写死为 90px；
+     同优先级下后者覆盖前者，所以品牌与间距的覆写必须排在它后面。）
+   ========================================================================== */
+
+/* 中段（平板竖屏～小笔记本）导航最挤，收窄菜单间距 */
+@media (max-width: 1024px) {
+    .nav-menu {
+        gap: 22px;
+    }
+}
+
+/* 900px 以下最挤：Haobao 原本在 769–860px 就溢出（.nav-wrapper gap 20px 是主因），
+   Pioneer Horizon 的宽 logo 更明显。这里收窄内边距与各处间距，保持单行不换行 */
+@media (max-width: 900px) {
+    .container {
+        padding: 0 24px;
+    }
+    .nav-wrapper {
+        gap: 8px;
+    }
+    .nav-menu {
+        gap: 14px;
+    }
+    .logo-section {
+        gap: 8px;
+    }
+    .lang-toggle {
+        padding: 5px 4px;
+    }
+}
+
+/* Pioneer Horizon 的 logo 更宽（4.93:1），按断点限制最大宽度：
+   `object-fit: contain` 下实际渲染尺寸取 height 与 max-width 的较小值，等比缩小 */
+[data-brand="pioneerhorizon"] .site-logo {
+    --logo-h: 72px;
+    --logo-cap: 24vw;
+}
+[data-brand="pioneerhorizon"] .site-logo.small {
+    --logo-h-small: 64px;
+}
+@media (max-width: 1024px) {
+    [data-brand="pioneerhorizon"] .site-logo {
+        --logo-h-1024: 58px;
+        --logo-cap: 19vw;
+    }
+}
+@media (max-width: 900px) {
+    [data-brand="pioneerhorizon"] .site-logo {
+        --logo-h-1024: 50px;
+        --logo-cap: 18vw;
+    }
+}
+@media (max-width: 768px) {
+    [data-brand="pioneerhorizon"] .site-logo {
+        --logo-h-768: 46px;
+        --logo-cap: 34vw;
+    }
+}
+@media (max-width: 480px) {
+    [data-brand="pioneerhorizon"] .site-logo {
+        --logo-h-480: 44px;
+        --logo-cap: 52vw;
+    }
+}

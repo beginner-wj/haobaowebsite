@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Pricing - Haobao Pte. Ltd.</title>
+    <!-- BRAND_SDK -->
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +16,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <div class="logo-section">
-                    <a href="index.html"><img class="site-logo" src="logo_bai.png" alt="Haobao logo"></a>
+                    <a href="index.html"><img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo"></a>
                 </div>
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
@@ -43,7 +44,7 @@
     <!-- Hero -->
     <section class="gp-hero">
         <div class="container">
-            <p class="gp-eyebrow" data-i18n="goldpricing.eyebrow">Haobao Pte. Ltd. — Precious Metals</p>
+            <p class="gp-eyebrow" data-i18n="goldpricing.eyebrow">Precious Metals</p>
             <h1 class="gp-title" data-i18n="goldpricing.title">Gold Pricing</h1>
             <p class="gp-subtitle" data-i18n="goldpricing.subtitle">Real-time market reference prices and our indicative physical gold quote.</p>
         </div>
@@ -53,7 +54,7 @@
     <section class="gp-quotes">
         <div class="container">
             <div class="gp-quotes-head">
-                <h2 class="gp-quotes-title" data-i18n="goldpricing.quotes.title">Haobao Physical Gold</h2>
+                <h2 class="gp-quotes-title" data-i18n="goldpricing.quotes.title">Physical Gold</h2>
                 <p class="gp-quotes-subtitle" data-i18n="goldpricing.quotes.subtitle">Indicative OTC Pricing</p>
             </div>
             <div class="gp-quotes-grid">
@@ -62,7 +63,7 @@
                         <span class="gp-quote-tag" data-i18n="goldpricing.quotes.buy">BUY</span>
                         <span class="gp-quote-live"><span class="gp-live-dot"></span><span data-i18n="goldpricing.quotes.live">Live</span></span>
                     </div>
-                    <p class="gp-quote-desc" data-i18n="goldpricing.quotes.buy.desc">Indicative price at which Haobao may purchase qualifying physical gold from the client.</p>
+                    <p class="gp-quote-desc" data-i18n="goldpricing.quotes.buy.desc">Indicative price at which we may purchase qualifying physical gold from the client.</p>
                     <div class="gp-quote-values">
                         <div class="gp-quote-value">
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.g">USD/g</span>
@@ -80,7 +81,7 @@
                         <span class="gp-quote-tag" data-i18n="goldpricing.quotes.sell">SELL</span>
                         <span class="gp-quote-live"><span class="gp-live-dot"></span><span data-i18n="goldpricing.quotes.live">Live</span></span>
                     </div>
-                    <p class="gp-quote-desc" data-i18n="goldpricing.quotes.sell.desc">Indicative price at which Haobao may sell qualifying physical gold to the client.</p>
+                    <p class="gp-quote-desc" data-i18n="goldpricing.quotes.sell.desc">Indicative price at which we may sell qualifying physical gold to the client.</p>
                     <div class="gp-quote-values">
                         <div class="gp-quote-value">
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.g">USD/g</span>
@@ -130,7 +131,7 @@
     <!-- 免责声明 + 数据方法说明 -->
     <section class="gp-disclaimer">
         <div class="container">
-            <p class="gp-disclaimer-text" data-i18n="goldpricing.disclaimer">Prices are indicative only and may fluctuate depending on market conditions, timing, liquidity, bullion type, quantity and other transaction-specific factors. Please contact Haobao for an executable quotation.</p>
+            <p class="gp-disclaimer-text" data-i18n="goldpricing.disclaimer">Prices are indicative only and may fluctuate depending on market conditions, timing, liquidity, bullion type, quantity and other transaction-specific factors. Please contact us for an executable quotation.</p>
             <p class="gp-methodology"><a href="#" id="methodologyToggle" data-i18n="goldpricing.methodology.link">Data &amp; Methodology</a></p>
             <div class="gp-methodology-box" id="methodologyBox" hidden>
                 <h3 data-i18n="goldpricing.methodology.title">Data Sources &amp; Calculation Methodology</h3>
@@ -145,7 +146,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <a href="index.html"><img class="site-logo small" src="logo_hei.png" alt="Haobao logo"></a>
+                        <a href="index.html"><img class="site-logo small" src="/__brand__/logo-light.png" data-brand-logo="light" alt="Logo"></a>
                     </div>
                     <p data-i18n="footer.description">Leading the future of gold investment with transparency and security.</p>
                 </div>
@@ -161,16 +162,17 @@
                 </div>
                 <div class="footer-section">
                     <h4 data-i18n="footer.contact">Contact</h4>
-                    <p>salesdpt@haobaoco.com</p>
+                    <p data-brand-email>salesdpt@haobaoco.com</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-i18n="footer.copyright">© 2024 Haobao Pte. Ltd. All rights reserved.</p>
+                <p data-i18n="footer.copyright">© 2024 All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="translations.js"></script>
+    <script src="brand.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

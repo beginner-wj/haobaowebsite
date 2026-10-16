@@ -14,19 +14,23 @@ function updateLanguage(lang) {
     // 更新所有带有 data-i18n 属性的元素
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
+        const raw = translations[lang] && translations[lang][key];
+        // 品牌占位符（{{brand}} / {{brandZh}} / {{email}}）按当前域名替换
+        const value = raw && window.__BRAND__ && window.__BRAND__.t
+            ? window.__BRAND__.t(raw)
+            : raw;
+        if (value) {
             if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                element.placeholder = translations[lang][key];
+                element.placeholder = value;
             } else if (element.tagName === 'STRONG' || element.tagName === 'P' || element.tagName === 'LI') {
                 // 对于包含HTML标签的内容，使用innerHTML
-                element.innerHTML = translations[lang][key];
+                element.innerHTML = value;
             } else {
                 // 检查翻译文本是否包含HTML标签
-                const translation = translations[lang][key];
-                if (translation.includes('<strong>') || translation.includes('<')) {
-                    element.innerHTML = translation;
+                if (value.includes('<strong>') || value.includes('<')) {
+                    element.innerHTML = value;
                 } else {
-                    element.textContent = translation;
+                    element.textContent = value;
                 }
             }
         }
@@ -224,6 +228,9 @@ function initAboutTabs() {
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
+    // 品牌先落地（logo / 邮箱），再渲染文案，避免两个域名互相闪错品牌
+    if (window.initBrandLogo) window.initBrandLogo();
+    if (window.initBrandEmail) window.initBrandEmail();
     initLanguage();
     initNavbar();
     initNavActive();
