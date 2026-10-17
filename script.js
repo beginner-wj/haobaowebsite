@@ -461,67 +461,149 @@ function initGoldPricingPage() {
         }
     };
 
-    // 手机端（≤768px）：每个市场一张卡片，替代横向滚动的表格；
-    // 桌面/平板仍用表格，两者由同一份数据渲染，CSS 按断点切换显示
+    // 手机端（≤768px）：市场参考价改为紧凑列表（市场 | USD/g | CNY/g | 最后更新），
+    // 每行可展开看全部换算与来源；桌面/平板仍用表格，两者由同一份数据渲染
+    const MARKET_BADGES = {
+        xauusd:     ['G', 'gp-mi-teal'],
+        sge_au9999: ['S', 'gp-mi-brown'],
+        sh_am:      ['S', 'gp-mi-blue'],
+        sh_pm:      ['S', 'gp-mi-blue'],
+        lbma_am:    ['L', 'gp-mi-purple'],
+        lbma_pm:    ['L', 'gp-mi-purple']
+    };
+
     const renderMarketCards = (data) => {
         const root = document.getElementById('marketCards');
         if (!root) return;
         const t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
 
         root.innerHTML = '';
+
+        // 表头行（列名带 data-i18n，语言切换自动跟随）
+        const head = document.createElement('div');
+        head.className = 'gp-mhead';
+        head.innerHTML =
+            '<span class="gp-mhead-name" data-i18n="goldpricing.market.col.benchmark"></span>' +
+            '<span data-i18n="goldpricing.market.row.usd_g"></span>' +
+            '<span data-i18n="goldpricing.market.row.cny_g"></span>' +
+            '<span class="gp-mhead-date" data-i18n="goldpricing.market.row.last_updated"></span>' +
+            '<span aria-hidden="true"></span>';
+        head.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')); });
+        root.appendChild(head);
+
         COLUMNS.forEach((col) => {
             const market = data.markets[col.key] || {};
-            const card = document.createElement('div');
-            card.className = 'gp-mcard';
+            const [letter, colorCls] = MARKET_BADGES[col.key] || ['•', 'gp-mi-blue'];
+            const item = document.createElement('div');
+            item.className = 'gp-mitem';
 
-            const title = document.createElement('h3');
-            title.className = 'gp-mcard-title';
-            title.setAttribute('data-i18n', col.i18n); // 语言切换时由 updateLanguage 自动更新
-            title.textContent = t(col.i18n);
-            card.appendChild(title);
+            // 摘要行：徽标 + 市场名 + USD/g + CNY/g + 日期 + 箭头
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.className = 'gp-mrow';
+            row.setAttribute('aria-expanded', 'false');
 
-            const rows = document.createElement('div');
-            rows.className = 'gp-mcard-rows';
-            ROWS.forEach((row) => {
+            const badge = document.createElement('span');
+            badge.className = `gp-mi ${colorCls}`;
+            badge.textContent = letter;
+            badge.setAttribute('aria-hidden', 'true');
+
+            const name = document.createElement('span');
+            name.className = 'gp-mname';
+            name.setAttribute('data-i18n', col.i18n);
+            name.textContent = t(col.i18n);
+
+            const usd = document.createElement('span');
+            usd.className = 'gp-mval';
+            usd.textContent = fmt2(market.usd_g);
+
+            const cny = document.createElement('span');
+            cny.className = 'gp-mval';
+            cny.textContent = fmt2(market.cny_g);
+
+            const date = document.createElement('span');
+            date.className = 'gp-mdate';
+            date.textContent = market.date || (market.lastUpdated ? String(market.lastUpdated).slice(0, 10) : '—');
+
+            const chev = document.createElement('span');
+            chev.className = 'gp-mchev';
+            chev.textContent = '›';
+            chev.setAttribute('aria-hidden', 'true');
+
+            row.append(badge, name, usd, cny, date, chev);
+
+            // 展开区：其余换算 + 来源 + 完整时间
+            const detail = document.createElement('div');
+            detail.className = 'gp-mdetail';
+            detail.hidden = true;
+            [
+                ['goldpricing.market.row.usd_oz', fmt2(market.usd_oz)],
+                ['goldpricing.market.row.cny_oz', fmt2(market.cny_oz)],
+                ['goldpricing.market.row.sgd_g', fmt2(market.sgd_g)],
+                ['goldpricing.market.row.sgd_oz', fmt2(market.sgd_oz)]
+            ].forEach(([key, v]) => {
                 const line = document.createElement('div');
-                line.className = 'gp-mcard-row';
-
-                const label = document.createElement('span');
-                label.className = 'gp-mcard-label';
-                label.setAttribute('data-i18n', row.i18n);
-                label.textContent = t(row.i18n);
-
-                const value = document.createElement('span');
-                value.className = 'gp-mcard-value';
-                if (row.kind === 'num' || row.kind === 'num-sgd') {
-                    const v = market[row.key];
-                    value.textContent = fmt2(v);
-                    if (v === null || v === undefined) value.classList.add('gp-empty');
-                } else if (row.kind === 'time') {
-                    value.textContent = market.date || formatTime(market.lastUpdated);
-                    if (!value.textContent || value.textContent === '—') value.classList.add('gp-empty');
-                } else if (row.kind === 'source') {
-                    const src = data.sources ? data.sources[col.key] : null;
-                    if (src) {
-                        const a = document.createElement('a');
-                        a.href = src;
-                        a.target = '_blank';
-                        a.rel = 'noopener noreferrer';
-                        a.textContent = src.replace(/^https?:\/\/(www\.)?/, '');
-                        a.className = 'gp-mcard-src';
-                        value.appendChild(a);
-                    } else {
-                        value.textContent = '—';
-                        value.classList.add('gp-empty');
-                    }
-                }
-
-                line.appendChild(label);
-                line.appendChild(value);
-                rows.appendChild(line);
+                line.className = 'gp-mdetail-line';
+                const l = document.createElement('span');
+                l.setAttribute('data-i18n', key);
+                l.textContent = t(key);
+                const b = document.createElement('b');
+                b.textContent = v;
+                line.append(l, b);
+                detail.appendChild(line);
             });
-            card.appendChild(rows);
-            root.appendChild(card);
+
+            const srcLine = document.createElement('div');
+            srcLine.className = 'gp-mdetail-line';
+            const srcLabel = document.createElement('span');
+            srcLabel.setAttribute('data-i18n', 'goldpricing.market.row.source');
+            srcLabel.textContent = t('goldpricing.market.row.source');
+            const srcVal = document.createElement('span');
+            const src = data.sources ? data.sources[col.key] : null;
+            if (src) {
+                const a = document.createElement('a');
+                a.href = src;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = src.replace(/^https?:\/\/(www\.)?/, '');
+                a.className = 'gp-mcard-src';
+                srcVal.appendChild(a);
+            } else {
+                srcVal.textContent = '—';
+            }
+            srcLine.append(srcLabel, srcVal);
+            detail.appendChild(srcLine);
+
+            const timeLine = document.createElement('div');
+            timeLine.className = 'gp-mdetail-line';
+            const timeLabel = document.createElement('span');
+            timeLabel.setAttribute('data-i18n', 'goldpricing.market.row.last_updated');
+            timeLabel.textContent = t('goldpricing.market.row.last_updated');
+            const timeVal = document.createElement('span');
+            timeVal.textContent = market.date || formatTime(market.lastUpdated);
+            timeLine.append(timeLabel, timeVal);
+            detail.appendChild(timeLine);
+
+            item.append(row, detail);
+            root.appendChild(item);
+        });
+    };
+
+    // 行展开/收起：事件委托绑在容器上（render 只替换子节点，容器常驻）
+    const bindMarketListEvents = () => {
+        const root = document.getElementById('marketCards');
+        if (!root || root.dataset.bound) return;
+        root.dataset.bound = '1';
+        root.addEventListener('click', (e) => {
+            const row = e.target.closest('.gp-mrow');
+            if (!row) return;
+            const item = row.parentElement;
+            const detail = item.querySelector('.gp-mdetail');
+            if (!detail) return;
+            const open = detail.hidden;
+            detail.hidden = !open;
+            item.classList.toggle('open', open);
+            row.setAttribute('aria-expanded', String(open));
         });
     };
 
@@ -538,10 +620,27 @@ function initGoldPricingPage() {
         setQuote('quoteBuyUsdOz', q.buy && q.buy.usd_oz, 2);
         setQuote('quoteSellUsdG', q.sell && q.sell.usd_g, 2);
         setQuote('quoteSellUsdOz', q.sell && q.sell.usd_oz, 2);
+        // 手机端报价卡显示 CNY/g：接口只出 USD，用同一份汇率客户端换算（与市场列服务端口径一致）
+        const fxRate = data.fx && Number(data.fx.usd_cny) ? Number(data.fx.usd_cny) : null;
+        const setCny = (id, usdG) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const n = Number(usdG);
+            el.textContent = Number.isFinite(n) && fxRate ? (n * fxRate).toFixed(2) : '—';
+        };
+        setCny('quoteBuyCnyG', q.buy && q.buy.usd_g);
+        setCny('quoteSellCnyG', q.sell && q.sell.usd_g);
         const buyUpdated = document.getElementById('quoteBuyUpdated');
         const sellUpdated = document.getElementById('quoteSellUpdated');
         if (buyUpdated) buyUpdated.textContent = formatTime(q.buy && q.buy.lastUpdated);
         if (sellUpdated) sellUpdated.textContent = formatTime(q.sell && q.sell.lastUpdated);
+
+        // 手机端全局状态条：取 BUY/SELL 中最新一次更新时间
+        const statusTime = document.getElementById('gpStatusTime');
+        if (statusTime) {
+            const times = [q.buy && q.buy.lastUpdated, q.sell && q.sell.lastUpdated].filter(Boolean).sort();
+            statusTime.textContent = formatTime(times.pop());
+        }
 
         // ---- 汇率脚注 ----
         const fxNote = document.getElementById('fxNote');
@@ -650,6 +749,30 @@ function initGoldPricingPage() {
             if (box) box.hidden = !box.hidden;
         });
     }
+
+    // 手机端"查看详情"：一键展开/收起全部市场的完整换算
+    const detailsToggle = document.getElementById('marketDetailsToggle');
+    if (detailsToggle) {
+        detailsToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const root = document.getElementById('marketCards');
+            if (!root) return;
+            const expand = !root.classList.contains('all-open');
+            root.classList.toggle('all-open', expand);
+            root.querySelectorAll('.gp-mitem').forEach((item) => {
+                const detail = item.querySelector('.gp-mdetail');
+                const row = item.querySelector('.gp-mrow');
+                if (detail) detail.hidden = !expand;
+                item.classList.toggle('open', expand);
+                if (row) row.setAttribute('aria-expanded', String(expand));
+            });
+            const key = expand ? 'goldpricing.market.hide' : 'goldpricing.market.details';
+            detailsToggle.setAttribute('data-i18n', key);
+            const v = translations[currentLang] && translations[currentLang][key];
+            if (v) detailsToggle.textContent = v;
+        });
+    }
+    bindMarketListEvents();
 
     const refresh = async () => {
         try {

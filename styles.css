@@ -1459,9 +1459,76 @@ html {
     -webkit-overflow-scrolling: touch;
 }
 
-/* 手机端市场卡片容器：桌面/平板隐藏（用表格），≤768px 由文件末尾断点块切换显示 */
+/* 手机端市场列表容器：桌面/平板隐藏（用表格），≤768px 由文件末尾断点块切换显示 */
 .gp-market-cards {
     display: none;
+}
+
+/* 全局状态条 / 报价卡图标 / CNY 报价值 / 查看详情 —— 仅手机端显示 */
+.gp-status,
+.gp-quote-icon,
+.gp-quote-value-cny,
+.gp-market-details {
+    display: none;
+}
+
+/* 方法论卡片的嵌套结构：桌面端保持"纯链接"外观 */
+.gp-methodology-ic,
+.gp-methodology-desc,
+.gp-methodology-chev {
+    display: none;
+}
+
+/* 联系条（金价页，桌面/手机都显示） */
+.gp-contact-strip {
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-light);
+    padding: 28px 0;
+}
+.gp-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 14px rgba(26, 26, 26, 0.04);
+}
+.gp-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.gp-contact-item + .gp-contact-item {
+    border-left: 1px solid var(--border-light);
+    padding-left: 20px;
+}
+.gp-contact-ic {
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--gold-dark);
+}
+.gp-contact-txt {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.gp-contact-txt strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-black);
+}
+.gp-contact-txt a,
+.gp-contact-txt span:not(.gp-contact-ic) {
+    font-size: 12.5px;
+    color: var(--text-gray);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+.gp-contact-txt a:hover {
+    color: var(--gold-dark);
 }
 
 .gp-table {
@@ -1954,99 +2021,430 @@ body.menu-open {
 }
 
 /* ==========================================================================
-   金价行情页手机端强化 —— 置于文件末尾以覆盖前面对应规则
-   7 列市场参考价表格在手机上横向滚动一屏只能看到一个市场，
-   ≤768px 改为“每市场一张卡片”，全部换算值一屏可读；
-   BUY/SELL 报价卡同步收紧纵向空间
+   金价行情页手机端强化 —— 按参考设计稿实现，置于文件末尾以覆盖前面对应规则
+   - Hero：深色图片背景（金条图 + 深色遮罩）、左对齐白字、衬线标题
+   - 全局状态条（最后更新 + Live）替代各卡片分散的时间徽章
+   - BUY/SELL 并排两列：圆形箭头图标、浅绿/浅金底色、USD/g + CNY/g 彩色数值
+   - 市场参考价：紧凑 4 列列表（市场 | USD/g | CNY/g | 最后更新），
+     行首彩色徽标，点行展开全部换算与来源；"查看详情"一键全展开
    ========================================================================== */
 @media (max-width: 768px) {
-    /* 表格 → 卡片 */
-    .gp-table-wrap {
+    /* ---- Hero：深色图片背景 + 左对齐 ---- */
+    .gp-hero {
+        background:
+            linear-gradient(180deg, rgba(15, 30, 48, 0.78) 0%, rgba(15, 30, 48, 0.62) 55%, rgba(15, 30, 48, 0.8) 100%),
+            url('img/jintiao.png') center / cover no-repeat;
+        padding: calc(96px + env(safe-area-inset-top)) 0 42px;
+        text-align: left;
+    }
+    .gp-eyebrow {
+        color: #E8C15A;
+        margin-bottom: 10px;
+    }
+    .gp-title {
+        color: #FFFFFF;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(28px, 7.6vw, 36px);
+        margin-bottom: 10px;
+    }
+    .gp-subtitle {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 14.5px;
+        max-width: none;
+    }
+
+    /* ---- 全局状态条 ---- */
+    .gp-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .gp-status-updated {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-size: 12px;
+        color: var(--text-black);
+        box-shadow: 0 2px 8px rgba(26, 26, 26, 0.05);
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .gp-status-updated .gp-live-dot {
+        width: 8px;
+        height: 8px;
+        flex-shrink: 0;
+    }
+    .gp-status-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #E3F4EA;
+        color: #1F7A44;
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-size: 12.5px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    /* ---- 报价区标题隐藏，卡片并排两列 ---- */
+    .gp-quotes-head {
         display: none;
     }
-    .gp-market-cards {
-        display: grid;
+    .gp-quotes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
     }
-    .gp-mcard {
+    .gp-quote-card {
+        border-radius: 14px;
+        padding: 16px 14px 14px;
+        display: flex;
+        flex-direction: column;
+    }
+    .gp-quote-buy {
+        background: #F1F9F3;
+        border: 1px solid #D8ECDE;
+        border-top: 4px solid #2E8B57;
+    }
+    .gp-quote-sell {
+        background: #FDF9EC;
+        border: 1px solid #F0E6C8;
+        border-top: 4px solid var(--gold-color);
+    }
+    .gp-quote-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .gp-quote-icon-buy {
+        background: #2E8B57;
+    }
+    .gp-quote-icon-sell {
+        background: var(--gold-color);
+    }
+    .gp-quote-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .gp-quote-header .gp-quote-live {
+        display: none; /* Live 徽章上移到全局状态条 */
+    }
+    .gp-quote-tag {
+        font-size: 18px;
+    }
+    .gp-quote-desc {
+        font-size: 12px;
+        line-height: 1.55;
+        margin: 0 0 12px;
+        padding-left: 44px; /* 与标题文字对齐（图标 34px + 间距 10px） */
+    }
+    .gp-quote-values {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 0;
+        margin-top: auto;
+    }
+    .gp-quote-value {
+        padding: 10px 4px;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 9px;
+        min-width: 0;
+    }
+    .gp-quote-unit {
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+    .gp-quote-num {
+        font-size: 18px;
+    }
+    .gp-quote-buy .gp-quote-num {
+        color: #1E7E46;
+    }
+    .gp-quote-sell .gp-quote-num {
+        color: var(--gold-dark);
+    }
+    .gp-quote-value-cny {
+        display: block;
+    }
+    .gp-quote-value-oz {
+        display: none; /* 盎司换算移到市场列表，报价卡聚焦 USD/g 与 CNY/g */
+    }
+    .gp-quote-updated {
+        display: none;
+    }
+
+    /* ---- 市场参考价：标题行 + 查看详情 ---- */
+    .gp-market-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .gp-market-title {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+    .gp-market-subtitle {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+    .gp-market-details {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #33475B;
+        text-decoration: none;
+        flex-shrink: 0;
+        padding-bottom: 2px;
+    }
+    .gp-market-details::after {
+        content: '›';
+        font-size: 15px;
+        line-height: 1;
+    }
+
+    /* ---- 紧凑列表：表头 + 可展开行 ---- */
+    .gp-market-cards {
+        display: block;
         background: var(--bg-white);
         border: 1px solid var(--border-light);
         border-radius: 12px;
-        padding: 14px 16px 8px;
+        padding: 6px 10px;
         box-shadow: 0 4px 14px rgba(26, 26, 26, 0.05);
     }
-    .gp-mcard-title {
-        margin: 0 0 6px;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-black);
-        line-height: 1.4;
+    .gp-mhead,
+    .gp-mrow {
+        display: grid;
+        /* 6 列：徽标 | 市场名 | USD/g | CNY/g | 日期 | 箭头（minmax(0,1fr) 防内容撑宽） */
+        grid-template-columns: 24px minmax(0, 1fr) 48px 48px 60px 10px;
+        gap: 6px;
+        align-items: center;
     }
-    .gp-mcard-row {
+    .gp-mhead {
+        background: #EEF2F8;
+        border-radius: 8px;
+        padding: 9px 10px;
+        margin: 6px 0 2px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #33475B;
+    }
+    .gp-mhead span:nth-child(1) {
+        grid-column: 1 / 3; /* 表头首列横跨徽标+名称两列 */
+    }
+    .gp-mhead span:nth-child(3),
+    .gp-mhead span:nth-child(4),
+    .gp-mhead-date {
+        text-align: right;
+    }
+    .gp-mhead-date {
+        font-size: 10.5px;
+    }
+    .gp-mitem {
+        border-bottom: 1px solid var(--border-light);
+    }
+    .gp-mitem:last-child {
+        border-bottom: none;
+    }
+    .gp-mrow {
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 11px 4px;
+        text-align: left;
+        font-family: inherit;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.04);
+    }
+    .gp-mi {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        color: #FFFFFF;
+        font-size: 11.5px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .gp-mi-blue { background: #4A90D9; }
+    .gp-mi-purple { background: #8B5CF6; }
+    .gp-mi-teal { background: #0D9488; }
+    .gp-mi-brown { background: #8D6E63; }
+    .gp-mname {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-black);
+        line-height: 1.35;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    .gp-mval {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--red-active);
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        white-space: nowrap;
+    }
+    .gp-mdate {
+        font-size: 10.5px;
+        color: var(--text-gray);
+        text-align: right;
+        white-space: nowrap;
+    }
+    .gp-mchev {
+        color: #9AA7B4;
+        font-size: 15px;
+        line-height: 1;
+        text-align: right;
+        transition: transform 0.2s ease;
+    }
+    .gp-mitem.open .gp-mchev {
+        transform: rotate(90deg);
+    }
+
+    /* ---- 展开区：其余换算 + 来源 + 完整时间 ---- */
+    .gp-mdetail {
+        padding: 2px 4px 10px 36px;
+    }
+    .gp-mdetail-line {
         display: flex;
         align-items: baseline;
         justify-content: space-between;
         gap: 12px;
-        padding: 7px 0;
-        border-bottom: 1px dashed var(--border-light);
-        font-size: 14px;
-        line-height: 1.5;
+        padding: 5px 0;
+        font-size: 12.5px;
+        border-top: 1px dashed var(--border-light);
     }
-    .gp-mcard-row:last-child {
-        border-bottom: none;
-    }
-    .gp-mcard-label {
+    .gp-mdetail-line span:first-child {
         color: var(--text-gray);
         flex-shrink: 0;
     }
-    .gp-mcard-value {
+    .gp-mdetail-line b {
         font-weight: 600;
+        color: var(--text-black);
         font-variant-numeric: tabular-nums;
         text-align: right;
         overflow-wrap: anywhere;
     }
-    .gp-mcard-value.gp-empty {
-        font-weight: 400;
-    }
     .gp-mcard-src {
-        color: #0066cc;
+        color: #0066CC;
         word-break: break-all;
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 400;
     }
 
-    /* BUY/SELL 报价卡：收紧纵向空间，首屏更快看到核心数值 */
-    .gp-quotes-head {
-        margin-bottom: 22px;
+    /* ---- 说明 / 免责 / 方法论 ---- */
+    .gp-table-wrap {
+        display: none; /* 手机不再用横向滚动表格 */
     }
-    .gp-quotes-grid {
+    .gp-note {
+        font-size: 11.5px;
+    }
+    .gp-disclaimer-text {
+        background: #F5F7FA;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 12.5px;
+        line-height: 1.65;
+        text-align: left;
+    }
+    .gp-methodology a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(26, 26, 26, 0.04);
+    }
+    .gp-methodology-ic {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--gold-color);
+        color: #FFFFFF;
+        font-size: 15px;
+        font-weight: 700;
+        font-style: normal;
+        flex-shrink: 0;
+    }
+    .gp-methodology-txt {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        text-align: left;
+    }
+    .gp-methodology-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-black);
+    }
+    .gp-methodology-desc {
+        display: block;
+        font-size: 11.5px;
+        color: var(--text-gray);
+        line-height: 1.5;
+    }
+    .gp-methodology-chev {
+        display: block;
+        color: #9AA7B4;
+        font-size: 18px;
+        line-height: 1;
+        margin-left: auto;
+    }
+
+    /* ---- 联系条：单列 ---- */
+    .gp-contact-strip {
+        padding: 18px 0 26px;
+    }
+    .gp-contact-grid {
+        grid-template-columns: 1fr;
         gap: 14px;
+        padding: 16px;
     }
-    .gp-quote-card {
-        padding: 18px 16px 14px;
+    .gp-contact-item + .gp-contact-item {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border-light);
+        padding-top: 14px;
     }
-    .gp-quote-header {
-        margin-bottom: 8px;
+}
+
+/* ---- 超窄屏（≤360px）：日期列放不下，隐藏（展开区仍有完整时间） ---- */
+@media (max-width: 360px) {
+    .gp-mhead,
+    .gp-mrow {
+        grid-template-columns: 24px minmax(0, 1fr) 48px 48px 10px;
     }
-    .gp-quote-tag {
-        font-size: 17px;
-    }
-    .gp-quote-desc {
-        font-size: 13px;
-        line-height: 1.55;
-        margin-bottom: 12px;
-    }
-    .gp-quote-values {
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-    .gp-quote-value {
-        padding: 10px 8px;
-    }
-    .gp-quote-num {
-        font-size: 22px;
-    }
-    .gp-market-head {
-        margin-bottom: 20px;
+    .gp-mhead-date,
+    .gp-mdate {
+        display: none;
     }
 }

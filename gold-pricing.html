@@ -57,9 +57,19 @@
                 <h2 class="gp-quotes-title" data-i18n="goldpricing.quotes.title">Physical Gold</h2>
                 <p class="gp-quotes-subtitle" data-i18n="goldpricing.quotes.subtitle">Indicative OTC Pricing</p>
             </div>
+            <!-- 手机端全局状态条：最后更新时间 + Live（桌面端隐藏） -->
+            <div class="gp-status">
+                <span class="gp-status-updated">
+                    <span class="gp-live-dot" aria-hidden="true"></span>
+                    <span data-i18n="goldpricing.lastUpdated">Last updated:</span>
+                    <span id="gpStatusTime">—</span>
+                </span>
+                <span class="gp-status-live"><span aria-hidden="true">⚡</span> <span data-i18n="goldpricing.quotes.live">Live</span></span>
+            </div>
             <div class="gp-quotes-grid">
                 <div class="gp-quote-card gp-quote-buy">
                     <div class="gp-quote-header">
+                        <span class="gp-quote-icon gp-quote-icon-buy" aria-hidden="true">↓</span>
                         <span class="gp-quote-tag" data-i18n="goldpricing.quotes.buy">BUY</span>
                         <span class="gp-quote-live"><span class="gp-live-dot"></span><span data-i18n="goldpricing.quotes.live">Live</span></span>
                     </div>
@@ -69,7 +79,11 @@
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.g">USD/g</span>
                             <span class="gp-quote-num" id="quoteBuyUsdG">—</span>
                         </div>
-                        <div class="gp-quote-value">
+                        <div class="gp-quote-value gp-quote-value-cny">
+                            <span class="gp-quote-unit" data-i18n="goldpricing.market.row.cny_g">CNY/g</span>
+                            <span class="gp-quote-num" id="quoteBuyCnyG">—</span>
+                        </div>
+                        <div class="gp-quote-value gp-quote-value-oz">
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.oz">USD/troy oz</span>
                             <span class="gp-quote-num" id="quoteBuyUsdOz">—</span>
                         </div>
@@ -78,6 +92,7 @@
                 </div>
                 <div class="gp-quote-card gp-quote-sell">
                     <div class="gp-quote-header">
+                        <span class="gp-quote-icon gp-quote-icon-sell" aria-hidden="true">↑</span>
                         <span class="gp-quote-tag" data-i18n="goldpricing.quotes.sell">SELL</span>
                         <span class="gp-quote-live"><span class="gp-live-dot"></span><span data-i18n="goldpricing.quotes.live">Live</span></span>
                     </div>
@@ -87,7 +102,11 @@
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.g">USD/g</span>
                             <span class="gp-quote-num" id="quoteSellUsdG">—</span>
                         </div>
-                        <div class="gp-quote-value">
+                        <div class="gp-quote-value gp-quote-value-cny">
+                            <span class="gp-quote-unit" data-i18n="goldpricing.market.row.cny_g">CNY/g</span>
+                            <span class="gp-quote-num" id="quoteSellCnyG">—</span>
+                        </div>
+                        <div class="gp-quote-value gp-quote-value-oz">
                             <span class="gp-quote-unit" data-i18n="goldpricing.unit.usd.oz">USD/troy oz</span>
                             <span class="gp-quote-num" id="quoteSellUsdOz">—</span>
                         </div>
@@ -102,8 +121,11 @@
     <section class="gp-market">
         <div class="container">
             <div class="gp-market-head">
-                <h2 class="gp-market-title" data-i18n="goldpricing.market.title">Market Reference Prices</h2>
-                <p class="gp-market-subtitle" data-i18n="goldpricing.market.subtitle">Global Benchmarks &amp; Market Prices</p>
+                <div class="gp-market-head-txt">
+                    <h2 class="gp-market-title" data-i18n="goldpricing.market.title">Market Reference Prices</h2>
+                    <p class="gp-market-subtitle" data-i18n="goldpricing.market.subtitle">Global Benchmarks &amp; Market Prices</p>
+                </div>
+                <a href="#" class="gp-market-details" id="marketDetailsToggle" data-i18n="goldpricing.market.details">See details</a>
             </div>
             <div class="gp-table-wrap">
                 <table class="gp-table" id="marketTable">
@@ -134,10 +156,49 @@
     <section class="gp-disclaimer">
         <div class="container">
             <p class="gp-disclaimer-text" data-i18n="goldpricing.disclaimer">Prices are indicative only and may fluctuate depending on market conditions, timing, liquidity, bullion type, quantity and other transaction-specific factors. Please contact us for an executable quotation.</p>
-            <p class="gp-methodology"><a href="#" id="methodologyToggle" data-i18n="goldpricing.methodology.link">Data &amp; Methodology</a></p>
+            <p class="gp-methodology">
+                <!-- 注意：data-i18n 放在内层 span 上，外层 a 不能带，否则语言切换会清掉嵌套结构 -->
+                <a href="#" id="methodologyToggle">
+                    <span class="gp-methodology-ic" aria-hidden="true">i</span>
+                    <span class="gp-methodology-txt">
+                        <span class="gp-methodology-title" data-i18n="goldpricing.methodology.link">Data &amp; Methodology</span>
+                        <span class="gp-methodology-desc" data-i18n="goldpricing.methodology.desc">View data sources, calculation methodology and additional information.</span>
+                    </span>
+                    <span class="gp-methodology-chev" aria-hidden="true">›</span>
+                </a>
+            </p>
             <div class="gp-methodology-box" id="methodologyBox" hidden>
                 <h3 data-i18n="goldpricing.methodology.title">Data Sources &amp; Calculation Methodology</h3>
                 <ul id="methodologyList"></ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系条：咨询邮箱（按品牌）/ 电话 / 营业时间（与首页联系区同源文案） -->
+    <section class="gp-contact-strip">
+        <div class="container">
+            <div class="gp-contact-grid">
+                <div class="gp-contact-item">
+                    <span class="gp-contact-ic" aria-hidden="true">✉</span>
+                    <span class="gp-contact-txt">
+                        <strong data-i18n="gp.contact.enquiries">For enquiries</strong>
+                        <a data-brand-email href="mailto:salesdpt@haobaoco.com">salesdpt@haobaoco.com</a>
+                    </span>
+                </div>
+                <div class="gp-contact-item">
+                    <span class="gp-contact-ic" aria-hidden="true">✆</span>
+                    <span class="gp-contact-txt">
+                        <strong data-i18n="gp.contact.call">Call us</strong>
+                        <a href="tel:+6569892156">+65 6989 2156</a>
+                    </span>
+                </div>
+                <div class="gp-contact-item">
+                    <span class="gp-contact-ic" aria-hidden="true">🕐</span>
+                    <span class="gp-contact-txt">
+                        <strong data-i18n="contact.hours.title">Business hours</strong>
+                        <span data-i18n="contact.hours.weekdays">Monday - Friday: 0900 – 1800 (SGT)</span>
+                    </span>
+                </div>
             </div>
         </div>
     </section>

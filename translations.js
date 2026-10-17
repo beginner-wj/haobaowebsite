@@ -118,6 +118,9 @@ const translations = {
         "goldpricing.unit.usd.oz": "USD/金衡盎司",
         "goldpricing.market.title": "市场参考价格",
         "goldpricing.market.subtitle": "全球基准与市场价格",
+        "goldpricing.market.details": "查看详情",
+        "goldpricing.market.hide": "收起详情",
+        "goldpricing.market.col.benchmark": "市场 / 基准价",
         "goldpricing.market.col.market": "市场",
         "goldpricing.market.col.xau": "全球 XAU/USD 现货",
         "goldpricing.market.col.au9999": "SGE Au99.99",
@@ -144,6 +147,9 @@ const translations = {
         "goldpricing.methodology.item.lbma": "LBMA 黄金价格 AM/PM：LBMA 官方（prices.lbma.org.uk）",
         "goldpricing.methodology.item.fx": "汇率 USD/CNY、USD/SGD：open.er-api.com（每日更新）",
         "goldpricing.methodology.item.convert": "换算：1 金衡盎司 = 31.1034768 克；自有报价 BUY = XAU/USD × 0.98、SELL = XAU/USD × 1.02。",
+        "goldpricing.methodology.desc": "查看数据来源、计算方法与更多信息。",
+        "gp.contact.enquiries": "咨询邮箱",
+        "gp.contact.call": "电话咨询",
     },
     en: {
         "logo.text": "{{brand}}",
@@ -263,6 +269,9 @@ const translations = {
         "goldpricing.unit.usd.oz": "USD/troy oz",
         "goldpricing.market.title": "Market Reference Prices",
         "goldpricing.market.subtitle": "Global Benchmarks & Market Prices",
+        "goldpricing.market.details": "See details",
+        "goldpricing.market.hide": "Hide details",
+        "goldpricing.market.col.benchmark": "Market / Benchmark",
         "goldpricing.market.col.market": "Market",
         "goldpricing.market.col.xau": "Global XAU/USD Spot",
         "goldpricing.market.col.au9999": "SGE Au99.99",
@@ -289,5 +298,8 @@ const translations = {
         "goldpricing.methodology.item.lbma": "LBMA Gold Price AM/PM: LBMA official (prices.lbma.org.uk)",
         "goldpricing.methodology.item.fx": "FX rates USD/CNY, USD/SGD: open.er-api.com (daily)",
         "goldpricing.methodology.item.convert": "Conversion: 1 troy oz = 31.1034768 g; our quotes BUY = XAU/USD × 0.98, SELL = XAU/USD × 1.02.",
+        "goldpricing.methodology.desc": "View data sources, calculation methodology and additional information.",
+        "gp.contact.enquiries": "For enquiries",
+        "gp.contact.call": "Call us",
     }
 };
