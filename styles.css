@@ -2150,8 +2150,7 @@ body.menu-open {
     .gp-quote-desc {
         font-size: 12px;
         line-height: 1.55;
-        margin: 0 0 12px;
-        padding-left: 44px; /* 与标题文字对齐（图标 34px + 间距 10px） */
+        margin: 0 0 12px; /* 顶格左对齐，与图标对齐；窄卡内不再留大段左侧空白 */
     }
     .gp-quote-values {
         grid-template-columns: repeat(2, minmax(0, 1fr));
