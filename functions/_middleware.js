@@ -72,6 +72,16 @@ export async function onRequest(context) {
   const response = await next();
 
   const ct = response.headers.get('content-type') || '';
+
+  // CSS/JS：Pages 静态资源默认 cache-control 为 max-age=14400（4 小时），
+  // 改版后老访客会长时间停留在旧样式/旧脚本上。HTML 引用侧已带 ?v= 版本号，
+  // 这里再兜底改成「每次回源校验」（带 etag 的 304 很轻量），确保部署即生效。
+  if (ct.includes('text/css') || ct.includes('javascript')) {
+    const assetHeaders = new Headers(response.headers);
+    assetHeaders.set('cache-control', 'public, max-age=0, must-revalidate');
+    return new Response(response.body, { status: response.status, headers: assetHeaders });
+  }
+
   if (!ct.includes('text/html')) return response;
 
   try {
