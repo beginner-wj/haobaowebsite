@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>FAQ - Haobao Pte. Ltd.</title>
+    <meta name="description" content="Frequently asked questions about Pioneer Horizon — who we are, our pricing and our services.">
+    <!-- BRAND_SDK -->
+    <link rel="stylesheet" href="styles.css?v=20261024a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-section">
+                    <a href="index.html"><img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo"></a>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                    <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                    <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                    <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                    <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                    <li><a href="faq.html" class="active" data-i18n="nav.faq">FAQ</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="lang-toggle" id="langToggle">
+                        <span class="lang-icon">中</span>
+                        <span class="lang-globe">🌐</span>
+                    </button>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FAQ 深色 Hero -->
+    <section class="faq-hero">
+        <div class="container">
+            <h1 class="faq-hero-title" data-i18n="faq.title">Frequently Asked Questions</h1>
+            <p class="faq-hero-subtitle" data-i18n="faq.subtitle">Quick answers about our products, pricing and services.</p>
+        </div>
+    </section>
+
+    <!-- FAQ 内容：分组 + 手风琴（后续可继续添加其他分组，如 Our Products 等） -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="faq-group">
+                <div class="faq-group-head">
+                    <h2 class="faq-group-title" data-i18n="faq.group.about.title">About Us</h2>
+                    <p class="faq-group-desc" data-i18n="faq.group.about.desc">Who we are and how we're different.</p>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span data-i18n="faq.q.who">Who are we?</span>
+                        <span class="faq-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="faq-answer" hidden>
+                        <p data-i18n="about.who.text1">{{brand}} is a Singapore-based precious metals dealer.</p>
+                        <p data-i18n="about.who.text2">We sell and buy back physical investment-grade precious metals (including gold, silver and selected precious metals) from well-established refineries based on live spot price.</p>
+                        <p data-i18n="about.who.text3">Supported by an experienced team and trusted partners, we operate in a market that is both fragmented and regulatorily complex. Our focus is on delivering a seamless, transparent, and professionally executed experience for every client.</p>
+                        <p data-i18n="about.who.text4">We're registered with the Ministry of Law as a precious metals dealer, so you can trust that every transaction is handled securely and in line with Singapore's compliance requirements.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span data-i18n="faq.q.why">Why us?</span>
+                        <span class="faq-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="faq-answer" hidden>
+                        <p data-i18n="about.why.intro">The precious metals market is global, fragmented, and often opaque. At {{brand}}, we aim to simplify the trading experience by delivering competitive pricing, transparency, flexibility and discretion.</p>
+                        <p><strong data-i18n="about.why.p1.label">Competitive Pricing: </strong><span data-i18n="about.why.p1.text">We aim to consistently offer better prices than major Singapore dealers, with lower premiums when you buy and higher prices when you sell</span></p>
+                        <p><strong data-i18n="about.why.p2.label">Transparency: </strong><span data-i18n="about.why.p2.text">Our pricing is anchored to global precious metals benchmarks, with clearly disclosed premiums and spreads. No hidden markups or unexpected charges</span></p>
+                        <p><strong data-i18n="about.why.p3.label">Flexibility: </strong><span data-i18n="about.why.p3.text">We tailor transactions to your specific requirements, from trade size and product selection to settlement arrangements, storage and logistics</span></p>
+                        <p><strong data-i18n="about.why.p4.label">Discretion: </strong><span data-i18n="about.why.p4.text">We prioritise client confidentiality and data protection, while maintaining rigorous regulatory compliance</span></p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span data-i18n="faq.q.gold">Why gold and precious metals?</span>
+                        <span class="faq-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="faq-answer" hidden>
+                        <p data-i18n="about.gold.text1">Gold and precious metals have preserved value for thousands of years across different economic systems and market cycles.</p>
+                        <p data-i18n="about.gold.text2">Gold has historically served as a <strong>hedge against inflation, currency debasement, and financial uncertainty</strong>. As a physical asset, it carries no counterparty risk and is recognised and traded globally.</p>
+                        <p data-i18n="about.gold.text3">For many investors, precious metals play a strategic role in <strong>portfolio diversification, capital preservation, and long-term financial resilience</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <a href="index.html"><img class="site-logo small" src="/__brand__/logo-light.png" data-brand-logo="light" alt="Logo"></a>
+                    </div>
+                    <p data-i18n="footer.description">Leading the future of gold investment with transparency and security.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.quickLinks">Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                        <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                        <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                        <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                        <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.contact">Contact</h4>
+                    <p><a data-brand-email href="mailto:salesdpt@haobaoco.com">salesdpt@haobaoco.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-i18n="footer.copyright">© 2024 All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+    <script src="translations.js?v=20261024a"></script>
+    <script src="brand.js?v=20261024a"></script>
+    <script src="script.js?v=20261024a"></script>
+</body>
+</html>

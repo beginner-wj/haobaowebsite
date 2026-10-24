@@ -48,6 +48,9 @@ function updateLanguage(lang) {
             langIcon.textContent = lang === 'zh' ? 'EN' : '中';
         }
     }
+
+    // 通知动态渲染组件（如产品卡片）按新语言重绘
+    document.dispatchEvent(new CustomEvent('lang:changed', { detail: { lang } }));
 }
 
 // 切换语言
@@ -218,25 +221,19 @@ function animateNumbers() {
     statNumbers.forEach(stat => observer.observe(stat));
 }
 
-// About页面标签切换
-function initAboutTabs() {
-    const aboutButtons = document.querySelectorAll('.about-btn');
-    const contentPanels = document.querySelectorAll('.content-panel');
-    
-    aboutButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetTab = button.getAttribute('data-tab');
-            
-            // 移除所有active类
-            aboutButtons.forEach(btn => btn.classList.remove('active'));
-            contentPanels.forEach(panel => panel.classList.remove('active'));
-            
-            // 添加active类到当前按钮和对应内容
-            button.classList.add('active');
-            const targetPanel = document.querySelector(`.content-panel[data-content="${targetTab}"]`);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-            }
+// FAQ 手风琴（faq.html）：点击问题展开/收起答案
+function initFaq() {
+    const questions = document.querySelectorAll('.faq-question');
+    questions.forEach((q) => {
+        q.addEventListener('click', () => {
+            const item = q.closest('.faq-item');
+            if (!item) return;
+            const answer = item.querySelector('.faq-answer');
+            if (!answer) return;
+            const open = answer.hidden;
+            answer.hidden = !open;
+            item.classList.toggle('open', open);
+            q.setAttribute('aria-expanded', String(open));
         });
     });
 }
@@ -253,9 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initContactForm();
     animateNumbers();
-    initAboutTabs();
+    initFaq();
     initMetalPrices();
     initGoldPricingPage();
+    initShop();
     
     // 语言切换按钮事件
     const langToggle = document.getElementById('langToggle');
@@ -394,15 +392,14 @@ function initGoldPricingPage() {
     ];
 
     // 行定义：USD/g、CNY/g、USD/troy oz、CNY/troy oz、SGD/g、SGD/troy oz（所有列均显示）
+    // 注：Last Updated 与 Source 已按要求从表格中移除，改为页面底部脚注（gpFootnoteUpdated / gpFootnoteSources）
     const ROWS = [
         { key: 'usd_g', i18n: 'goldpricing.market.row.usd_g', kind: 'num' },
         { key: 'cny_g', i18n: 'goldpricing.market.row.cny_g', kind: 'num' },
         { key: 'usd_oz', i18n: 'goldpricing.market.row.usd_oz', kind: 'num' },
         { key: 'cny_oz', i18n: 'goldpricing.market.row.cny_oz', kind: 'num' },
         { key: 'sgd_g', i18n: 'goldpricing.market.row.sgd_g', kind: 'num' },
-        { key: 'sgd_oz', i18n: 'goldpricing.market.row.sgd_oz', kind: 'num' },
-        { key: 'lastUpdated', i18n: 'goldpricing.market.row.last_updated', kind: 'time' },
-        { key: 'source', i18n: 'goldpricing.market.row.source', kind: 'source' }
+        { key: 'sgd_oz', i18n: 'goldpricing.market.row.sgd_oz', kind: 'num' }
     ];
 
     const readCache = () => {
@@ -480,13 +477,13 @@ function initGoldPricingPage() {
         root.innerHTML = '';
 
         // 表头行（列名带 data-i18n，语言切换自动跟随）
+        // 注：Last Updated 已从摘要行移除（放入底部脚注与展开详情）
         const head = document.createElement('div');
         head.className = 'gp-mhead';
         head.innerHTML =
             '<span class="gp-mhead-name" data-i18n="goldpricing.market.col.benchmark"></span>' +
             '<span data-i18n="goldpricing.market.row.usd_g"></span>' +
             '<span data-i18n="goldpricing.market.row.cny_g"></span>' +
-            '<span class="gp-mhead-date" data-i18n="goldpricing.market.row.last_updated"></span>' +
             '<span aria-hidden="true"></span>';
         head.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')); });
         root.appendChild(head);
@@ -497,7 +494,7 @@ function initGoldPricingPage() {
             const item = document.createElement('div');
             item.className = 'gp-mitem';
 
-            // 摘要行：徽标 + 市场名 + USD/g + CNY/g + 日期 + 箭头
+            // 摘要行：徽标 + 市场名 + USD/g + CNY/g + 箭头
             const row = document.createElement('button');
             row.type = 'button';
             row.className = 'gp-mrow';
@@ -521,16 +518,12 @@ function initGoldPricingPage() {
             cny.className = 'gp-mval';
             cny.textContent = fmt2(market.cny_g);
 
-            const date = document.createElement('span');
-            date.className = 'gp-mdate';
-            date.textContent = market.date || (market.lastUpdated ? String(market.lastUpdated).slice(0, 10) : '—');
-
             const chev = document.createElement('span');
             chev.className = 'gp-mchev';
             chev.textContent = '›';
             chev.setAttribute('aria-hidden', 'true');
 
-            row.append(badge, name, usd, cny, date, chev);
+            row.append(badge, name, usd, cny, chev);
 
             // 展开区：其余换算 + 来源 + 完整时间
             const detail = document.createElement('div');
@@ -642,7 +635,7 @@ function initGoldPricingPage() {
             statusTime.textContent = formatTime(times.pop());
         }
 
-        // ---- 汇率脚注 ----
+        // ---- 汇率脚注（USDCNY / USDSGD） ----
         const fxNote = document.getElementById('fxNote');
         if (fxNote) {
             const fx = data.fx;
@@ -654,6 +647,41 @@ function initGoldPricingPage() {
                 fxNote.textContent = label.replace('{rate}', fx.usd_cny.toFixed(4)).replace('{time}', time);
             } else {
                 fxNote.textContent = '** USDCNY = —';
+            }
+        }
+        const fxNoteSgd = document.getElementById('fxNoteSgd');
+        if (fxNoteSgd) {
+            const fx = data.fx;
+            if (fx && fx.usd_sgd) {
+                const label = (translations[currentLang] && translations[currentLang].goldpricing && translations[currentLang].goldpricing.fxnote_sgd)
+                    || '*** USDSGD = {rate} (last updated {time})';
+                const time = formatTime(fx.updatedAt);
+                fxNoteSgd.textContent = label.replace('{rate}', fx.usd_sgd.toFixed(4)).replace('{time}', time);
+            } else {
+                fxNoteSgd.textContent = '*** USDSGD = —';
+            }
+        }
+
+        // ---- 脚注：各市场数据时间与来源（替代原表格中的 Last Updated / Source 行） ----
+        const t9 = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
+        const updatedEl = document.getElementById('gpFootnoteUpdated');
+        const sourcesEl = document.getElementById('gpFootnoteSources');
+        if (updatedEl || sourcesEl) {
+            const partsTime = [];
+            const partsSrc = [];
+            COLUMNS.forEach((col) => {
+                const market = data.markets[col.key] || {};
+                const name = t9(col.i18n);
+                const when = market.date || formatTime(market.lastUpdated);
+                if (when && when !== '—') partsTime.push(`${name} ${when}`);
+                const src = data.sources ? data.sources[col.key] : null;
+                if (src) partsSrc.push(`${name} — ${src.replace(/^https?:\/\/(www\.)?/, '')}`);
+            });
+            if (updatedEl) {
+                updatedEl.textContent = partsTime.length ? `${t9('goldpricing.footnote.updated')} ${partsTime.join(' · ')}` : '';
+            }
+            if (sourcesEl) {
+                sourcesEl.textContent = partsSrc.length ? `${t9('goldpricing.footnote.sources')} ${partsSrc.join(' · ')}` : '';
             }
         }
 
@@ -794,3 +822,306 @@ function initGoldPricingPage() {
 }
 
 
+// ==================== 产品商店（buy-gold-silver.html） ====================
+// 产品数据在 products.js（window.SHOP_PRODUCTS），价格按 /prices 实时现货价 + 汇率换算：
+//   价格(S$) = USD/oz × (重量g ÷ 31.1034768) × USD/SGD × (1 + premiumPct%)
+function initShop() {
+    const grid = document.getElementById('shopGrid');
+    if (!grid || typeof SHOP_PRODUCTS === 'undefined' || !Array.isArray(SHOP_PRODUCTS)) return;
+
+    const OZT = 31.1034768;
+    const CACHE_KEY = 'shop_prices_cache';
+    const t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
+
+    const state = {
+        search: '',
+        metal: new Set(),
+        type: new Set(),
+        brand: '',
+        wMin: null,
+        wMax: null,
+        unit: 'g', // g | oz
+        sort: 'featured',
+        view: 'grid',
+        prices: null // { xau: USD/oz, xag: USD/oz|null, sgd: USD/SGD }
+    };
+
+    // ---- 工具 ----
+    const fmtMoney = (v, dec) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        return 'S$' + n.toLocaleString('en-SG', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    };
+    const totalDec = (v) => (Number(v) >= 1000 ? 0 : 2);
+
+    const usdOzFor = (metal) => {
+        if (!state.prices) return null;
+        if (metal === 'gold') return state.prices.xau;
+        if (metal === 'silver') return state.prices.xag;
+        return null;
+    };
+
+    // 产品价格（SGD），含特价折扣；无法计算时返回 null
+    const priceOf = (p) => {
+        const oz = usdOzFor(p.metal);
+        if (!state.prices || oz === null || oz === undefined) return null;
+        const base = oz * (p.weightG / OZT) * state.prices.sgd * (1 + (p.premiumPct || 0) / 100);
+        if (p.badge === 'sale' && p.discountPct) {
+            return { now: base * (1 - p.discountPct / 100), was: base };
+        }
+        return { now: base, was: null };
+    };
+
+    const weightInUnit = (g, unit) => (unit === 'oz' ? g / OZT : g);
+
+    // ---- 筛选与排序 ----
+    const filtered = () => {
+        const q = state.search.trim().toLowerCase();
+        let list = SHOP_PRODUCTS.filter((p) => {
+            if (q) {
+                const hay = `${p.name} ${p.brand} ${p.metal} ${p.type}`.toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            if (state.metal.size && !state.metal.has(p.metal)) return false;
+            if (state.type.size && !state.type.has(p.type)) return false;
+            if (state.brand && p.brand !== state.brand) return false;
+            const w = weightInUnit(p.weightG, state.unit);
+            if (state.wMin !== null && w < state.wMin) return false;
+            if (state.wMax !== null && w > state.wMax) return false;
+            return true;
+        });
+
+        const badgeRank = (p) => (p.badge === 'featured' ? 0 : p.badge === 'bestseller' ? 1 : p.badge === 'sale' ? 2 : 3);
+        const price = (p) => { const r = priceOf(p); return r ? r.now : Infinity; };
+
+        switch (state.sort) {
+            case 'priceAsc': list.sort((a, b) => price(a) - price(b)); break;
+            case 'priceDesc': list.sort((a, b) => price(b) - price(a)); break;
+            case 'weightAsc': list.sort((a, b) => a.weightG - b.weightG); break;
+            case 'weightDesc': list.sort((a, b) => b.weightG - a.weightG); break;
+            case 'name': list.sort((a, b) => a.name.localeCompare(b.name)); break;
+            default: list.sort((a, b) => badgeRank(a) - badgeRank(b)); break; // featured
+        }
+        return list;
+    };
+
+    // ---- 渲染 ----
+    const badgeHtml = (p) => {
+        if (!p.badge) return '';
+        const cls = { featured: 'badge-featured', bestseller: 'badge-bestseller', sale: 'badge-sale' }[p.badge] || '';
+        const label = t(`shop.badge.${p.badge}`);
+        return `<span class="product-badge ${cls}">${label}</span>`;
+    };
+
+    const cardHtml = (p) => {
+        const r = priceOf(p);
+        const oz = p.weightG / OZT;
+        const ozTxt = oz >= 1 ? oz.toFixed(2) : oz.toFixed(3);
+        const weightLine = `${p.weightG} g · ${ozTxt} oz`;
+        const meta = `${t(`metal.${p.metal}`)} · ${p.brand}`;
+        let priceLine;
+        if (r) {
+            priceLine = r.was !== null
+                ? `<span class="product-card-price"><s>${fmtMoney(r.was, totalDec(r.was))}</s> ${fmtMoney(r.now, totalDec(r.now))}</span>`
+                : `<span class="product-card-price">${fmtMoney(r.now, totalDec(r.now))}</span>`;
+        } else {
+            priceLine = '<span class="product-card-price">—</span>';
+        }
+        return `
+            <article class="product-card${p.badge === 'sale' ? ' is-sale' : ''}">
+                <div class="product-card-media">
+                    <img src="${p.image}" alt="${p.name}" loading="lazy">
+                    ${badgeHtml(p)}
+                </div>
+                <div class="product-card-body">
+                    <span class="product-card-meta">${meta}</span>
+                    <h3 class="product-card-name">${p.name}</h3>
+                    <div class="product-card-weight">${weightLine}</div>
+                    <div class="product-card-pricing">
+                        ${priceLine}
+                        <span class="product-card-unit">${r ? fmtMoney(r.now / p.weightG, 2) + '/g' : ''}</span>
+                    </div>
+                    <div class="product-card-premium">${t('shop.premium')} ${(p.premiumPct || 0).toFixed(2)}%</div>
+                </div>
+            </article>`;
+    };
+
+    const render = () => {
+        const list = filtered();
+        grid.innerHTML = list.map(cardHtml).join('');
+        grid.dataset.view = state.view;
+        const count = document.getElementById('shopCount');
+        if (count) count.textContent = t('shop.results').replace('{count}', String(list.length));
+        const empty = document.getElementById('shopEmpty');
+        if (empty) empty.hidden = list.length > 0;
+    };
+
+    const renderSpot = () => {
+        const ok = document.getElementById('shopSpot');
+        const err = document.getElementById('shopSpotError');
+        const vals = document.getElementById('shopSpotValues');
+        if (!ok || !err) return;
+        if (state.prices) {
+            const parts = [];
+            if (state.prices.xau) parts.push(`${t('shop.liveSpot.gold')} ${fmtMoney(state.prices.xau * state.prices.sgd, 2)}${t('shop.perOz')}`);
+            if (state.prices.xag) parts.push(`${t('shop.liveSpot.silver')} ${fmtMoney(state.prices.xag * state.prices.sgd, 2)}${t('shop.perOz')}`);
+            if (vals) vals.textContent = ' — ' + parts.join(' · ');
+            ok.hidden = false;
+            err.hidden = true;
+        } else {
+            ok.hidden = true;
+            err.hidden = false;
+        }
+    };
+
+    // ---- 现货价获取（带每日缓存兜底） ----
+    const readCache = () => {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            const c = raw ? JSON.parse(raw) : null;
+            return c && c.prices ? c : null;
+        } catch (e) { return null; }
+    };
+
+    const refreshPrices = async () => {
+        try {
+            const res = await fetch('/prices');
+            if (!res.ok) throw new Error('prices failed');
+            const data = await res.json();
+            if (!data || !data.fx || !data.fx.usd_sgd || !data.xauusd) throw new Error('invalid payload');
+            state.prices = {
+                xau: Number(data.xauusd),
+                xag: data.xagusd ? Number(data.xagusd) : null,
+                sgd: Number(data.fx.usd_sgd)
+            };
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify({ prices: state.prices, at: Date.now() })); } catch (e) {}
+        } catch (e) {
+            const cache = readCache();
+            if (cache) state.prices = cache.prices;
+        }
+        renderSpot();
+        render();
+    };
+
+    // ---- 品牌下拉选项 ----
+    const initBrandSelect = () => {
+        const sel = document.getElementById('shopBrand');
+        if (!sel) return;
+        const brands = [...new Set(SHOP_PRODUCTS.map((p) => p.brand))].sort((a, b) => a.localeCompare(b));
+        brands.forEach((b) => {
+            const o = document.createElement('option');
+            o.value = b;
+            o.textContent = b;
+            sel.appendChild(o);
+        });
+    };
+
+    // ---- 事件绑定 ----
+    const bind = () => {
+        const search = document.getElementById('shopSearch');
+        if (search) search.addEventListener('input', () => { state.search = search.value; render(); });
+
+        document.querySelectorAll('.chip-group[data-filter]').forEach((group) => {
+            const key = group.getAttribute('data-filter');
+            group.querySelectorAll('.chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    const v = chip.getAttribute('data-value');
+                    const set = key === 'metal' ? state.metal : state.type;
+                    if (set.has(v)) { set.delete(v); chip.classList.remove('active'); }
+                    else { set.add(v); chip.classList.add('active'); }
+                    render();
+                });
+            });
+        });
+
+        const brandSel = document.getElementById('shopBrand');
+        if (brandSel) brandSel.addEventListener('change', () => { state.brand = brandSel.value; render(); });
+
+        const wMin = document.getElementById('weightMin');
+        const wMax = document.getElementById('weightMax');
+        const applyWeight = () => {
+            const parse = (v) => (v === '' || v === null || !Number.isFinite(Number(v)) ? null : Number(v));
+            state.wMin = parse(wMin && wMin.value);
+            state.wMax = parse(wMax && wMax.value);
+            render();
+        };
+        if (wMin) wMin.addEventListener('input', applyWeight);
+        if (wMax) wMax.addEventListener('input', applyWeight);
+
+        document.querySelectorAll('#weightUnit [data-unit]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const unit = btn.getAttribute('data-unit');
+                if (unit === state.unit) return;
+                // 切换单位时把已输入的区间值换算过去，保持筛选结果不变
+                const conv = (v) => (v === null ? null : (unit === 'oz' ? v / OZT : v * OZT));
+                state.wMin = conv(state.wMin);
+                state.wMax = conv(state.wMax);
+                state.unit = unit;
+                if (wMin) wMin.value = state.wMin === null ? '' : String(Number(state.wMin.toFixed(3)));
+                if (wMax) wMax.value = state.wMax === null ? '' : String(Number(state.wMax.toFixed(3)));
+                document.querySelectorAll('#weightUnit [data-unit]').forEach((b2) => b2.classList.toggle('active', b2.getAttribute('data-unit') === unit));
+                render();
+            });
+        });
+
+        const sort = document.getElementById('shopSort');
+        if (sort) sort.addEventListener('change', () => { state.sort = sort.value; render(); });
+
+        const viewGrid = document.getElementById('viewGrid');
+        const viewList = document.getElementById('viewList');
+        if (viewGrid && viewList) {
+            const setView = (v) => {
+                state.view = v;
+                viewGrid.classList.toggle('active', v === 'grid');
+                viewList.classList.toggle('active', v === 'list');
+                render();
+            };
+            viewGrid.addEventListener('click', () => setView('grid'));
+            viewList.addEventListener('click', () => setView('list'));
+        }
+
+        const clear = document.getElementById('shopClear');
+        if (clear) {
+            clear.addEventListener('click', () => {
+                state.search = ''; state.metal.clear(); state.type.clear();
+                state.brand = ''; state.wMin = null; state.wMax = null;
+                if (search) search.value = '';
+                if (brandSel) brandSel.value = '';
+                if (wMin) wMin.value = '';
+                if (wMax) wMax.value = '';
+                document.querySelectorAll('.chip.active').forEach((c) => c.classList.remove('active'));
+                render();
+            });
+        }
+
+        // 移动端筛选面板开合
+        const filters = document.getElementById('shopFilters');
+        if (filters) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'shop-filters-toggle';
+            btn.setAttribute('data-i18n', 'shop.showFilters');
+            btn.textContent = t('shop.showFilters');
+            filters.parentNode.insertBefore(btn, filters);
+            btn.addEventListener('click', () => {
+                const open = filters.classList.toggle('open');
+                const key = open ? 'shop.hideFilters' : 'shop.showFilters';
+                btn.setAttribute('data-i18n', key);
+                btn.textContent = t(key);
+            });
+        }
+
+        // 语言切换后重绘（产品卡片与计数文案为动态渲染）
+        document.addEventListener('lang:changed', () => { renderSpot(); render(); });
+    };
+
+    initBrandSelect();
+    bind();
+    // 先用缓存兜底渲染，再拉取实时价
+    const cache = readCache();
+    if (cache) state.prices = cache.prices;
+    renderSpot();
+    render();
+    refreshPrices();
+    setInterval(refreshPrices, 60_000);
+}

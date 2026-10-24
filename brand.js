@@ -29,9 +29,9 @@
       name: 'Pioneer Horizon Pte. Ltd.',
       shortName: 'Pioneer Horizon',
       nameZh: 'Pioneer Horizon',
-      logoLight: '/img/brand/pioneerhorizon-logo-light.png',
-      logoDark: '/img/brand/pioneerhorizon-logo-dark.png',
-      email: 'salesdpt@pioneerhorizon.com.sg',
+      logoLight: '/img/brand/pioneerhorizon-logo-light.png?v=20261024a',
+      logoDark: '/img/brand/pioneerhorizon-logo-dark.png?v=20261024a',
+      email: 'operations@pioneerhorizonsg.com',
     },
   ];
 

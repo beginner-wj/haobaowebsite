@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Haobao Pte. Ltd. - A New Era of Gold Ownership</title>
+    <meta name="description" content="Buy, sell, and store investment-grade gold with transparent pricing and secure handling.">
     <!-- BRAND_SDK -->
-    <link rel="stylesheet" href="styles.css?v=20261017a">
+    <link rel="stylesheet" href="styles.css?v=20261024a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,22 +17,23 @@
         <div class="container">
             <div class="nav-wrapper">
                 <div class="logo-section">
-                    <img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo">
+                    <a href="index.html"><img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo"></a>
                 </div>
                 <ul class="nav-menu" id="navMenu">
-                    <li><a href="#home" class="active" data-i18n="nav.home">Home</a></li>
-                    <li><a href="#about" data-i18n="nav.about">About Us</a></li>
-                    <li><a href="#products" data-i18n="nav.products">Products</a></li>
-                    <li><a href="#storage" data-i18n="nav.storage">Storage Solutions</a></li>
-                    <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Gold Pricing</a></li>
-                    <li><a href="#contact" data-i18n="nav.contact">Contact Us</a></li>
+                    <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+                    <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                    <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                    <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                    <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                    <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button class="lang-toggle" id="langToggle">
                         <span class="lang-icon">中</span>
                         <span class="lang-globe">🌐</span>
                     </button>
-                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -44,76 +46,13 @@
     <!-- 首页Hero区域 -->
     <section class="hero" id="home">
         <div class="container">
-            <div class="hero-wrapper">
+            <div class="hero-wrapper hero-wrapper-single">
                 <div class="hero-content">
                     <h1 class="hero-title" data-i18n="hero.title">A New Era of Gold Ownership</h1>
                     <p class="hero-subtitle" data-i18n="hero.subtitle">Buy, Sell, and Store investment-grade gold with transparent pricing and secure handling</p>
                     <div class="hero-buttons">
-                        <a href="#products" class="btn btn-primary" data-i18n="hero.cta.primary">Featured Products</a>
-                        <a href="#about" class="btn btn-secondary" data-i18n="hero.cta.secondary">About Us</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <div class="hero-gold-card">
-                        <img src="img/huangjin1.png" alt="Gold bars" class="hero-gold-image">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 关于我们 -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="about.title">About Us</h2>
-                <p class="section-subtitle" data-i18n="about.subtitle">Leading the future of gold investment</p>
-            </div>
-            <div class="about-wrapper">
-                <div class="about-left">
-                    <button class="about-btn active" data-tab="who">
-                        <span data-i18n="about.btn.who">Who are we?</span>
-                        <div class="arrow-line"></div>
-                    </button>
-                    <button class="about-btn" data-tab="why">
-                        <span data-i18n="about.btn.why">Why us?</span>
-                        <div class="arrow-line"></div>
-                    </button>
-                    <button class="about-btn" data-tab="gold">
-                        <span data-i18n="about.btn.gold">Why gold and precious metals?</span>
-                        <div class="arrow-line"></div>
-                    </button>
-                </div>
-                <div class="about-right">
-                    <div class="about-content-box">
-                        <div class="about-background">
-                            <div class="about-coins"></div>
-                            <div class="about-chart"></div>
-                        </div>
-                        <div class="about-text-content" id="aboutContent">
-                            <div class="content-panel active" data-content="who">
-                                <p data-i18n="about.who.text1">Founded in 2024, we are a <strong data-i18n="about.who.highlight1">Singapore-based</strong> precious metals dealer specialising in physical gold, silver, and selected precious metals.</p>
-                                <p data-i18n="about.who.text2">The firm was established by a founder with <strong data-i18n="about.who.highlight2">over a decade of experience</strong> in precious metals trading and dealing across key global markets, including <strong data-i18n="about.who.highlight3">Shanghai (SGE)</strong>, <strong data-i18n="about.who.highlight4">London (OTC)</strong>, <strong data-i18n="about.who.highlight5">New York (COMEX) and Zürich (OTC)</strong>. This international background provides deep insight into pricing, sourcing, liquidity, and regulatory considerations across the global bullion market.</p>
-                                <p data-i18n="about.who.text3">Supported by an experienced team and trusted partners, we operate in a market that is both fragmented and regulatorily complex. Our focus is on delivering a <strong data-i18n="about.who.highlight6">seamless, transparent, and professionally executed experience</strong> for every client.</p>
-                            </div>
-                            <div class="content-panel" data-content="why">
-                                <p data-i18n="about.why.text1">The precious metals market is global, fragmented, and often opaque. We differentiate ourselves through a <strong data-i18n="about.why.highlight1">personalised, OTC-focused approach</strong>.</p>
-                                <p data-i18n="about.why.text2">By concentrating on over-the-counter transactions, we offer greater <strong data-i18n="about.why.highlight2">flexibility, customisation, and discretion</strong> than standard retail bullion channels. Each transaction is tailored to the client's needs, whether in terms of size, product selection, settlement, or logistics.</p>
-                                <p data-i18n="about.why.text3">Our core values guide every engagement:</p>
-                                <ul class="core-values">
-                                    <li data-i18n="about.why.value1">Integrity and transparent pricing</li>
-                                    <li data-i18n="about.why.value2">Deep market expertise</li>
-                                    <li data-i18n="about.why.value3">Confidentiality and discretion</li>
-                                    <li data-i18n="about.why.value4">Reliable execution</li>
-                                    <li data-i18n="about.why.value5">A client-first mindset</li>
-                                </ul>
-                            </div>
-                            <div class="content-panel" data-content="gold">
-                                <p data-i18n="about.gold.text1">Gold and precious metals have preserved value for thousands of years across different economic systems and market cycles.</p>
-                                <p data-i18n="about.gold.text2">Gold has historically served as a <strong data-i18n="about.gold.highlight1">hedge against inflation, currency debasement, and financial uncertainty</strong>. As a physical asset, it carries no counterparty risk and is recognised and traded globally.</p>
-                                <p data-i18n="about.gold.text3">For many investors, precious metals play a strategic role in <strong data-i18n="about.gold.highlight2">portfolio diversification, capital preservation, and long-term financial resilience</strong>.</p>
-                            </div>
-                        </div>
+                        <a href="buy-gold-silver.html" class="btn btn-primary" data-i18n="hero.cta.primary">Buy Gold &amp; Silver</a>
+                        <a href="faq.html" class="btn btn-secondary" data-i18n="hero.cta.secondary">About Us</a>
                     </div>
                 </div>
             </div>
@@ -122,142 +61,64 @@
 
     <div class="section-separator" aria-hidden="true"></div>
 
-    <!-- 产品 -->
-    <section class="products" id="products">
+    <!-- 探索产品与服务 -->
+    <section class="explore" id="explore">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title" data-i18n="products.title">Our Products</h2>
-                <p class="section-subtitle" data-i18n="products.subtitle">Investment-grade gold products for every investor</p>
+                <h2 class="section-title" data-i18n="explore.title">Explore our products and services</h2>
+                <p class="section-subtitle" data-i18n="explore.subtitle">From buying and selling back to secure storage — everything in one place</p>
             </div>
-            <div class="products-intro">
-                <p data-i18n="products.intro.text1">We provide access to a broad range of <strong data-i18n="products.intro.highlight1">physical gold, silver, and selected precious metals</strong>, sourced through established global channels. All transactions are conducted <strong data-i18n="products.intro.highlight2">exclusively on an over-the-counter (OTC) basis</strong>, allowing for a personalised, confidential, and flexible execution process.</p>
-                <p data-i18n="products.intro.text2">Product availability, specifications, and pricing are discussed directly with our team to ensure clarity and suitability for each client.</p>
-            </div>
-            
-            <div class="products-divider"></div>
-            
-            <div class="products-detail">
-                <div class="product-image-section">
-                    <img src="img/gold.png" alt="Gold" class="product-metal-image">
-                </div>
-                <div class="product-description">
-                    <h3 data-i18n="products.gold.title">Gold</h3>
-                    <p data-i18n="products.gold.intro">A wide selection of gold products is available, including:</p>
-                    <ul class="product-list">
-                        <li data-i18n="products.gold.item1">Gold bullion bars across various sizes</li>
-                        <li data-i18n="products.gold.item2">Cast and minted bars</li>
-                        <li data-i18n="products.gold.item3">Investment-grade and non-investment-grade gold</li>
-                        <li data-i18n="products.gold.item4">Coins and specialty products (subject to availability)</li>
-                    </ul>
-                    <p data-i18n="products.gold.suitable">Suitable for long-term capital preservation, portfolio diversification, or bespoke requirements.</p>
-                </div>
-                <div class="product-pricing">
-                    <div class="pricing-box">
-                        <p class="pricing-label" data-i18n="products.pricing.label">Indicative Price per ozt:</p>
-                        <div class="pricing-input" id="priceXAUUSD">—</div>
-                        <p class="pricing-note" data-i18n="products.pricing.note">1ozt = 31.1035g</p>
+            <div class="explore-grid">
+                <a class="explore-card" href="buy-gold-silver.html">
+                    <div class="explore-card-media"><img src="img/gold.png" alt="Gold bullion" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.buy.title">Buy Gold &amp; Silver</h3>
+                        <p data-i18n="explore.buy.desc">Investment-grade gold and silver, priced live against the USD/SGD spot price.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
                     </div>
-                </div>
-            </div>
-            
-            <div class="products-divider"></div>
-            
-            <div class="products-detail">
-                <div class="product-image-section">
-                    <img src="img/yinzi.png" alt="Silver" class="product-metal-image">
-                </div>
-                <div class="product-description">
-                    <h3 data-i18n="products.silver.title">Silver</h3>
-                    <p data-i18n="products.silver.intro">Silver products are available for clients as well, including:</p>
-                    <ul class="product-list">
-                        <li data-i18n="products.silver.item1">Silver bullion bars</li>
-                        <li data-i18n="products.silver.item2">Silver coins</li>
-                        <li data-i18n="products.silver.item3">Investment-grade and industrial-grade silver products</li>
-                    </ul>
-                </div>
-                <div class="product-pricing">
-                    <div class="pricing-box">
-                        <p class="pricing-label" data-i18n="products.pricing.label">Indicative Price per ozt:</p>
-                        <div class="pricing-input" id="priceXAGUSD">—</div>
-                        <p class="pricing-note" data-i18n="products.pricing.note">1ozt = 31.1035g</p>
+                </a>
+                <a class="explore-card" href="sell-to-us.html">
+                    <div class="explore-card-media"><img src="img/jintiao.png" alt="Sell gold bars to us" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.sell.title">Sell to Us</h3>
+                        <p data-i18n="explore.sell.desc">We buy back investment-grade gold and silver bullion at live market rates.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
                     </div>
-                </div>
-            </div>
-            
-            <div class="products-divider"></div>
-            
-            <div class="otc-approach">
-                <h3 data-i18n="products.otc.title">Our OTC-Only Approach</h3>
-                <p data-i18n="products.otc.text1">Other selected precious metals (such as platinum) can be sourced upon request, subject to market conditions and client requirements.</p>
-                <p data-i18n="products.otc.text2">Currently, all transactions are executed via <strong data-i18n="products.otc.highlight">direct OTC engagement</strong>, enabling:</p>
-                <ul class="product-list">
-                    <li data-i18n="products.otc.item1">Customised product selection and sizing</li>
-                    <li data-i18n="products.otc.item2">Competitive, transparent pricing</li>
-                    <li data-i18n="products.otc.item3">Discreet handling and settlement</li>
-                    <li data-i18n="products.otc.item4">Seamless coordination of delivery or secure storage</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <div class="section-separator" aria-hidden="true"></div>
-
-    <!-- 存储解决方案 -->
-    <section class="storage" id="storage">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="storage.title">Storage Solutions</h2>
-                <p class="section-subtitle" data-i18n="storage.subtitle">Secure and insured storage for your precious metals</p>
-            </div>
-            <div class="storage-content">
-                <div class="storage-text">
-                    <p data-i18n="storage.text1">For clients who prefer not to hold precious metals personally, we offer secure and fully insured storage solutions through partnerships with <strong data-i18n="storage.highlight1">industry-leading custody providers</strong>.</p>
-                    <p data-i18n="storage.text2">These facilities provide high-security vaulting, professional handling, and internationally recognised standards for precious metals custody. Storage arrangements can be <strong data-i18n="storage.highlight3">fully personalised</strong>, whether for allocated holdings, specific bar or coin selection, or tailored access and liquidity requirements.</p>
-                    <p data-i18n="storage.text3">By working with trusted global custodians, we ensure that your assets are safeguarded with the highest levels of security, confidentiality, and operational reliability.</p>
-                    <div class="storage-cta">
-                        <p><strong data-i18n="storage.cta.question">Interested in a tailored storage solution?</strong> <a href="#contact" data-i18n="storage.cta.link">Contact us</a> to discuss your requirements with our team.</p>
+                </a>
+                <a class="explore-card" href="storage-solutions.html">
+                    <div class="explore-card-media"><img src="img/yinzi.png" alt="Secure storage" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.store.title">Store with Us</h3>
+                        <p data-i18n="explore.store.desc">Secure and fully insured storage through leading custodians.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="section-separator" aria-hidden="true"></div>
-
-    <!-- 联系我们 -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-i18n="contact.title">Contact Us</h2>
-                <p class="section-subtitle" data-i18n="contact.subtitle">Get in touch with our team</p>
-            </div>
-            <div class="contact-content">
-                <div class="contact-section">
-                    <h3 data-i18n="contact.speak.title">Speak With Our Team</h3>
-                    <p data-i18n="contact.speak.description">For enquiries relating to precious metals products, OTC transactions, storage arrangements, or general information, please contact us directly. All communications are handled with professionalism and confidentiality.</p>
-                </div>
-                
-                <div class="contact-divider"></div>
-                
-                <div class="contact-section">
-                    <h3 data-i18n="contact.info.title">Contact Information</h3>
-                    <div class="contact-details">
-                        <div class="contact-detail-item">
-                            <h4 data-i18n="contact.email.title">Email</h4>
-                            <p data-brand-email>salesdpt@haobaoco.com</p>
-                        </div>
-                        <div class="contact-detail-item">
-                            <h4 data-i18n="contact.address.title">Address</h4>
-                            <p data-i18n="contact.address.text">24 DUXTON HILL, #02-00, SINGAPORE 089607</p>
-                        </div>
-                        <div class="contact-detail-item">
-                            <h4 data-i18n="contact.hours.title">Business Hours</h4>
-                            <p data-i18n="contact.hours.weekdays">Monday - Friday: 0900 – 1800 (SGT)</p>
-                            <p data-i18n="contact.hours.weekends">Weekends & Public Holidays: Closed</p>
-                        </div>
+                </a>
+                <a class="explore-card" href="gold-pricing.html">
+                    <div class="explore-card-media"><img src="img/aboutus.png" alt="Live gold prices" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.prices.title">Live Spot Prices</h3>
+                        <p data-i18n="explore.prices.desc">Real-time gold market reference prices and our indicative quote.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
                     </div>
-                </div>
+                </a>
+                <a class="explore-card" href="faq.html">
+                    <div class="explore-card-media"><img src="img/huangjin1.png" alt="About Pioneer Horizon" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.about.title">About Us</h3>
+                        <p data-i18n="explore.about.desc">Who we are and why investors choose us.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
+                    </div>
+                </a>
+                <a class="explore-card" href="contact.html">
+                    <div class="explore-card-media"><img src="img/jintiao.png" alt="Contact our team" loading="lazy"></div>
+                    <div class="explore-card-body">
+                        <h3 data-i18n="explore.contact.title">Contact Us</h3>
+                        <p data-i18n="explore.contact.desc">Speak with our team about your requirements.</p>
+                        <span class="explore-card-link" data-i18n="explore.cta">Explore</span>
+                    </div>
+                </a>
             </div>
+            <!-- 注：以上卡片图片为占位图，客户后续提供正式图片后直接替换 img 路径即可 -->
         </div>
     </section>
 
@@ -267,23 +128,25 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img class="site-logo small" src="/__brand__/logo-light.png" data-brand-logo="light" alt="Logo">
+                        <a href="index.html"><img class="site-logo small" src="/__brand__/logo-light.png" data-brand-logo="light" alt="Logo"></a>
                     </div>
                     <p data-i18n="footer.description">Leading the future of gold investment with transparency and security.</p>
                 </div>
                 <div class="footer-section">
                     <h4 data-i18n="footer.quickLinks">Quick Links</h4>
                     <ul>
-                        <li><a href="#home" data-i18n="nav.home">Home</a></li>
-                        <li><a href="#about" data-i18n="nav.about">About Us</a></li>
-                        <li><a href="#products" data-i18n="nav.products">Products</a></li>
-                        <li><a href="#storage" data-i18n="nav.storage">Storage Solutions</a></li>
-                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Gold Pricing</a></li>
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                        <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                        <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                        <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                        <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 data-i18n="footer.contact">Contact</h4>
-                    <p data-brand-email>salesdpt@haobaoco.com</p>
+                    <p><a data-brand-email href="mailto:salesdpt@haobaoco.com">salesdpt@haobaoco.com</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -294,9 +157,8 @@
 
     <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
-    <script src="translations.js?v=20261017a"></script>
-    <script src="brand.js?v=20261017a"></script>
-    <script src="script.js?v=20261017a"></script>
+    <script src="translations.js?v=20261024a"></script>
+    <script src="brand.js?v=20261024a"></script>
+    <script src="script.js?v=20261024a"></script>
 </body>
 </html>
-

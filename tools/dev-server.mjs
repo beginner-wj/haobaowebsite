@@ -6,6 +6,32 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { brandFor } from '../functions/_brands.js';
 import { rewriteHtml } from '../functions/_middleware.js';
+import { buildPayload } from '../functions/prices.js';
+
+// 本地 /prices：直接复用生产的取数逻辑（上游不可达时前端自动走缓存兜底）
+let pricesCache = { at: 0, payload: null };
+async function servePrices(res) {
+  const FRESH_MS = 5 * 60 * 1000;
+  if (pricesCache.payload && Date.now() - pricesCache.at < FRESH_MS) {
+    res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+    res.end(JSON.stringify(pricesCache.payload));
+    return;
+  }
+  try {
+    const payload = await buildPayload({});
+    pricesCache = { at: Date.now(), payload };
+    res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+    res.end(JSON.stringify(payload));
+  } catch (err) {
+    // 上游全挂时退回旧缓存（如有）
+    if (pricesCache.payload) {
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(JSON.stringify(pricesCache.payload));
+      return;
+    }
+    res.writeHead(500, { 'content-type': 'application/json' }).end('{"error":"prices unavailable"}');
+  }
+}
 
 const PORT = Number(process.argv[2] || 8788);
 // 站点根目录是仓库根（tools/ 的上一级）
@@ -51,6 +77,15 @@ window.addEventListener('load', function () {
     viewport: window.innerWidth,
     brand: document.documentElement.getAttribute('data-brand'),
     logo: r(document.querySelector('.site-logo')),
+    heroContent: r(document.querySelector('.hero-content')),
+    heroWrapCols: (function () {
+      var w = document.querySelector('.hero-wrapper');
+      return w ? getComputedStyle(w).gridTemplateColumns : null;
+    })(),
+    heroJSelf: (function () {
+      var c = document.querySelector('.hero-content');
+      return c ? getComputedStyle(c).justifySelf : null;
+    })(),
     menu: r(menu),
     navWrapper: r(document.querySelector('.nav-wrapper')),
     toggle: r(document.querySelector('.lang-toggle')),
@@ -111,6 +146,13 @@ createServer(async (req, res) => {
 
     let pathname = decodeURIComponent(url.pathname);
     if (pathname === '/' || pathname === '') pathname = '/index.html';
+
+    // 本地行情接口（与生产 /prices Pages Function 同一套聚合逻辑）
+    if (pathname === '/prices') {
+      await servePrices(res);
+      return;
+    }
+
     const filePath = join(ROOT, normalize(pathname).replace(/^(\.\.[/\\])+/, ''));
     if (!filePath.startsWith(ROOT)) {
       res.writeHead(403).end('forbidden');

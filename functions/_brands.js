@@ -20,10 +20,11 @@ export const BRANDS = {
     name: 'Pioneer Horizon Pte. Ltd.',
     shortName: 'Pioneer Horizon',
     nameZh: 'Pioneer Horizon',
-    logoLight: '/img/brand/pioneerhorizon-logo-light.png',
-    logoDark: '/img/brand/pioneerhorizon-logo-dark.png',
-    // TODO: 待客户确认新域名邮箱后替换
-    email: 'salesdpt@pioneerhorizon.com.sg',
+    // 2026-10 换用新 logo（见 img/brand/pioneerhorizon-logo-*.png）；?v= 用于刷新浏览器缓存
+    logoLight: '/img/brand/pioneerhorizon-logo-light.png?v=20261024a',
+    logoDark: '/img/brand/pioneerhorizon-logo-dark.png?v=20261024a',
+    // 2026-10-24 客户确认：咨询邮箱改为 operations@pioneerhorizonsg.com
+    email: 'operations@pioneerhorizonsg.com',
   },
 };
 

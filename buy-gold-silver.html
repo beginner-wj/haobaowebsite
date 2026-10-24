@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Buy Gold &amp; Silver - Haobao Pte. Ltd.</title>
+    <meta name="description" content="Investment-grade gold and silver from LBMA-accredited refiners, priced live against the USD/SGD spot price.">
+    <!-- BRAND_SDK -->
+    <link rel="stylesheet" href="styles.css?v=20261024a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo-section">
+                    <a href="index.html"><img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo"></a>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                    <li><a href="buy-gold-silver.html" class="active" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                    <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                    <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                    <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                    <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="lang-toggle" id="langToggle">
+                        <span class="lang-icon">中</span>
+                        <span class="lang-globe">🌐</span>
+                    </button>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="page-hero">
+        <div class="container">
+            <h1 class="page-hero-title" data-i18n="shop.title">Our Products</h1>
+            <p class="page-hero-subtitle" data-i18n="shop.desc">Investment-grade gold and silver from LBMA-accredited refiners, priced live against the USD/SGD spot price.</p>
+        </div>
+    </section>
+
+    <!-- 产品商店 -->
+    <section class="shop" id="shop">
+        <div class="container">
+            <!-- 工具栏：搜索 / 数量 / 排序 / 视图切换 -->
+            <div class="shop-toolbar">
+                <div class="shop-search">
+                    <span class="shop-search-ic" aria-hidden="true">🔍</span>
+                    <input type="search" id="shopSearch" data-i18n="shop.search" placeholder="Search…">
+                </div>
+                <div class="shop-toolbar-right">
+                    <span class="shop-count" id="shopCount">0</span>
+                    <label class="shop-sort">
+                        <span data-i18n="shop.sort">Sort</span>
+                        <select id="shopSort">
+                            <option value="featured" data-i18n="shop.sort.featured" selected>Featured</option>
+                            <option value="priceAsc" data-i18n="shop.sort.priceAsc">Price: Low to High</option>
+                            <option value="priceDesc" data-i18n="shop.sort.priceDesc">Price: High to Low</option>
+                            <option value="weightAsc" data-i18n="shop.sort.weightAsc">Weight: Light to Heavy</option>
+                            <option value="weightDesc" data-i18n="shop.sort.weightDesc">Weight: Heavy to Light</option>
+                            <option value="name" data-i18n="shop.sort.name">Name: A–Z</option>
+                        </select>
+                    </label>
+                    <div class="shop-view" role="group" aria-label="View">
+                        <button type="button" id="viewGrid" class="active" aria-label="Grid">▦</button>
+                        <button type="button" id="viewList" aria-label="List">☰</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shop-layout">
+                <!-- 左侧筛选栏 -->
+                <aside class="shop-filters" id="shopFilters">
+                    <div class="shop-filters-head">
+                        <h3 data-i18n="shop.filters">Filters</h3>
+                        <button type="button" class="shop-clear" id="shopClear" data-i18n="shop.clear">Clear all</button>
+                    </div>
+
+                    <div class="shop-filter-group">
+                        <h4 data-i18n="shop.metal">Metal</h4>
+                        <div class="chip-group" data-filter="metal">
+                            <button type="button" class="chip" data-value="gold"><span data-i18n="metal.gold">Gold</span></button>
+                            <button type="button" class="chip" data-value="silver"><span data-i18n="metal.silver">Silver</span></button>
+                        </div>
+                    </div>
+
+                    <div class="shop-filter-group">
+                        <h4 data-i18n="shop.type">Type</h4>
+                        <div class="chip-group" data-filter="type">
+                            <button type="button" class="chip" data-value="bar"><span data-i18n="type.bar">Bar</span></button>
+                            <button type="button" class="chip" data-value="coin"><span data-i18n="type.coin">Coin</span></button>
+                        </div>
+                    </div>
+
+                    <div class="shop-filter-group">
+                        <h4 data-i18n="shop.brand">Brand</h4>
+                        <select id="shopBrand">
+                            <option value="" data-i18n="shop.brand.all">All brands</option>
+                            <!-- 品牌选项由 script.js 按产品数据生成 -->
+                        </select>
+                    </div>
+
+                    <div class="shop-filter-group">
+                        <h4 data-i18n="shop.weight">Weight</h4>
+                        <div class="weight-unit" id="weightUnit" role="group">
+                            <button type="button" data-unit="g" class="active">g</button>
+                            <button type="button" data-unit="oz">oz</button>
+                        </div>
+                        <div class="weight-range">
+                            <input type="number" id="weightMin" min="0" placeholder="Min" data-i18n="shop.weight.min">
+                            <span class="weight-sep" aria-hidden="true">–</span>
+                            <input type="number" id="weightMax" min="0" placeholder="Max" data-i18n="shop.weight.max">
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 右侧产品区 -->
+                <div class="shop-main">
+                    <!-- 实时现货价参考条 -->
+                    <div class="shop-spot" id="shopSpot" hidden>
+                        <span class="gp-live-dot" aria-hidden="true"></span>
+                        <span data-i18n="shop.liveSpot">Live spot</span>
+                        <span id="shopSpotValues"></span>
+                    </div>
+                    <div class="shop-spot shop-spot-error" id="shopSpotError" hidden data-i18n="shop.unavailable">Live pricing is temporarily unavailable.</div>
+
+                    <div class="shop-grid" id="shopGrid" data-view="grid">
+                        <!-- 产品卡片由 script.js 渲染 -->
+                    </div>
+
+                    <div class="shop-empty" id="shopEmpty" hidden data-i18n="shop.empty">No products match your filters.</div>
+
+                    <div class="shop-notes">
+                        <p data-i18n="shop.priceNote">Prices are indicative, pegged to the live USD/SGD spot price, and confirmed with you at trade time.</p>
+                        <p><span data-i18n="shop.custom">Can't find what you're looking for? We source products on request —</span> <a href="contact.html" data-i18n="shop.contactLink">contact us</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <a href="index.html"><img class="site-logo small" src="/__brand__/logo-light.png" data-brand-logo="light" alt="Logo"></a>
+                    </div>
+                    <p data-i18n="footer.description">Leading the future of gold investment with transparency and security.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.quickLinks">Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                        <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                        <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                        <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                        <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.contact">Contact</h4>
+                    <p><a data-brand-email href="mailto:salesdpt@haobaoco.com">salesdpt@haobaoco.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-i18n="footer.copyright">© 2024 All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+    <script src="translations.js?v=20261024a"></script>
+    <script src="products.js?v=20261024a"></script>
+    <script src="brand.js?v=20261024a"></script>
+    <script src="script.js?v=20261024a"></script>
+</body>
+</html>

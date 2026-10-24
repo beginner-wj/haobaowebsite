@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Gold Pricing - Haobao Pte. Ltd.</title>
+    <title>Global Pricing - Haobao Pte. Ltd.</title>
+    <meta name="description" content="Real-time market reference prices and our indicative quote.">
     <!-- BRAND_SDK -->
-    <link rel="stylesheet" href="styles.css?v=20261017a">
+    <link rel="stylesheet" href="styles.css?v=20261024a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,12 +20,13 @@
                     <a href="index.html"><img class="site-logo" src="/__brand__/logo-dark.png" data-brand-logo="dark" alt="Logo"></a>
                 </div>
                 <ul class="nav-menu" id="navMenu">
-                    <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
-                    <li><a href="index.html#about" data-i18n="nav.about">About Us</a></li>
-                    <li><a href="index.html#products" data-i18n="nav.products">Products</a></li>
-                    <li><a href="index.html#storage" data-i18n="nav.storage">Storage Solutions</a></li>
-                    <li><a href="gold-pricing.html" class="active" data-i18n="nav.goldpricing">Gold Pricing</a></li>
-                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact Us</a></li>
+                    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                    <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                    <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                    <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                    <li><a href="gold-pricing.html" class="active" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                    <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button class="lang-toggle" id="langToggle">
@@ -45,8 +47,8 @@
     <section class="gp-hero">
         <div class="container">
             <p class="gp-eyebrow" data-i18n="goldpricing.eyebrow">Precious Metals</p>
-            <h1 class="gp-title" data-i18n="goldpricing.title">Gold Pricing</h1>
-            <p class="gp-subtitle" data-i18n="goldpricing.subtitle">Real-time market reference prices and our indicative physical gold quote.</p>
+            <h1 class="gp-title" data-i18n="goldpricing.title">Global Pricing</h1>
+            <p class="gp-subtitle" data-i18n="goldpricing.subtitle">Real-time market reference prices and our indicative quote.</p>
         </div>
     </section>
 
@@ -134,8 +136,8 @@
                             <th data-i18n="goldpricing.market.col.market">Market</th>
                             <th data-i18n="goldpricing.market.col.xau">Global XAU/USD Spot</th>
                             <th data-i18n="goldpricing.market.col.au9999">SGE Au99.99</th>
-                            <th data-i18n="goldpricing.market.col.sh_am">Shanghai Gold Benchmark – AM</th>
-                            <th data-i18n="goldpricing.market.col.sh_pm">Shanghai Gold Benchmark – PM</th>
+                            <th data-i18n="goldpricing.market.col.sh_am">Shanghai Gold – AM</th>
+                            <th data-i18n="goldpricing.market.col.sh_pm">Shanghai Gold – PM</th>
                             <th data-i18n="goldpricing.market.col.lbma_am">LBMA Gold Price – AM</th>
                             <th data-i18n="goldpricing.market.col.lbma_pm">LBMA Gold Price – PM</th>
                         </tr>
@@ -149,6 +151,9 @@
             <div class="gp-market-cards" id="marketCards"></div>
             <p class="gp-note" data-i18n="goldpricing.market.note.oz">* 1 troy oz = 31.1034768 g</p>
             <p class="gp-note" id="fxNote">** USDCNY = —</p>
+            <p class="gp-note" id="fxNoteSgd">*** USDSGD = —</p>
+            <p class="gp-note" id="gpFootnoteUpdated"></p>
+            <p class="gp-note" id="gpFootnoteSources"></p>
         </div>
     </section>
 
@@ -216,16 +221,18 @@
                 <div class="footer-section">
                     <h4 data-i18n="footer.quickLinks">Quick Links</h4>
                     <ul>
-                        <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
-                        <li><a href="index.html#about" data-i18n="nav.about">About Us</a></li>
-                        <li><a href="index.html#products" data-i18n="nav.products">Products</a></li>
-                        <li><a href="index.html#storage" data-i18n="nav.storage">Storage Solutions</a></li>
-                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Gold Pricing</a></li>
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="buy-gold-silver.html" data-i18n="nav.buyGoldSilver">Buy Gold &amp; Silver</a></li>
+                        <li><a href="sell-to-us.html" data-i18n="nav.sellToUs">Sell to Us</a></li>
+                        <li><a href="storage-solutions.html" data-i18n="nav.storage">Storage Solutions</a></li>
+                        <li><a href="gold-pricing.html" data-i18n="nav.goldpricing">Global Pricing</a></li>
+                        <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+                        <li><a href="contact.html" data-i18n="nav.contact">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 data-i18n="footer.contact">Contact</h4>
-                    <p data-brand-email>salesdpt@haobaoco.com</p>
+                    <p><a data-brand-email href="mailto:salesdpt@haobaoco.com">salesdpt@haobaoco.com</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -236,8 +243,8 @@
 
     <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
-    <script src="translations.js?v=20261017a"></script>
-    <script src="brand.js?v=20261017a"></script>
-    <script src="script.js?v=20261017a"></script>
+    <script src="translations.js?v=20261024a"></script>
+    <script src="brand.js?v=20261024a"></script>
+    <script src="script.js?v=20261024a"></script>
 </body>
 </html>

@@ -20,9 +20,14 @@ function escapeHtml(s) {
 }
 
 function pageTitleFor(pathname, brand) {
-  return pathname.includes('gold-pricing')
-    ? `Gold Pricing - ${brand.name}`
-    : `${brand.name} - A New Era of Gold Ownership`;
+  const p = pathname.toLowerCase();
+  if (p.includes('gold-pricing')) return `Global Pricing - ${brand.name}`;
+  if (p.includes('buy-gold-silver')) return `Buy Gold & Silver - ${brand.name}`;
+  if (p.includes('sell-to-us')) return `Sell to Us - ${brand.name}`;
+  if (p.includes('storage-solutions')) return `Storage Solutions - ${brand.name}`;
+  if (p.includes('faq')) return `Frequently Asked Questions - ${brand.name}`;
+  if (p.includes('contact')) return `Contact Us - ${brand.name}`;
+  return `${brand.name} - A New Era of Gold Ownership`;
 }
 
 export function rewriteHtml(html, brand, url) {

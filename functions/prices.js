@@ -214,33 +214,111 @@ async function fetchShanghaiBenchmark() {
 }
 
 // 4) LBMA Gold Price AM/PM（LBMA 官方 today.json，USD/oz）
-async function fetchLbma() {
-  const res = await fetchCached(LBMA_TODAY_URL, {}, TTL.lbma);
-  if (!res.ok) return { ok: false, reason: `lbma status ${res.status}` };
-  const data = await res.json();
+// 说明：prices.lbma.org.uk 的 Cloudflare WAF 会拦截数据中心/Worker 出口 IP（403），
+// 且会不定期收紧策略，导致 LBMA 列「又停止显示」。这里做三级兜底：
+//   ① 直连官方 today.json（带浏览器 UA 头）
+//   ② Wayback Machine 镜像（web.archive.org 会定期存档 today.json，可从 Worker 访问）
+//   ③ Cache API 中「最后一次成功」的响应（即使已过期也用它，数据自带日期，透明呈现）
+const LBMA_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+  'Accept': 'application/json,text/plain,*/*',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Referer': 'https://www.lbma.org.uk/'
+};
+// 「最后一次成功」缓存键（fetchCached 以 GET Request 为键，用合成 URL 区分）；
+// TTL 给 7 天，让最近一次成功的数据尽量留在边缘缓存里
+const LBMA_LASTGOOD_URL = `${LBMA_TODAY_URL}?lastgood=1`;
+const LBMA_LASTGOOD_TTL = 7 * 24 * 3600;
+
+function parseLbmaToday(data) {
   const gold = data && data.gold;
   const pick = (v) => {
     if (!v) return null;
-    const usd = num(v.usd);
+    // LBMA 数值可能是数字，也可能带千分位逗号的字符串（"4,038.38"）
+    const usd = num(typeof v.usd === 'string' ? v.usd.replace(/,/g, '') : v.usd);
     if (usd === null) return null;
     const dateRaw = typeof v.date === 'string' ? v.date : '';
-    // LBMA 返回 dd/mm（如 23/09）→ 转 yyyy-mm-dd（年份取当前年，跨年时回退一年）
-    const m = dateRaw.match(/(\d{2})\/(\d{2})/);
+    // LBMA 返回 dd/mm/yyyy（如 23/09/2026）→ 转 yyyy-mm-dd
+    const m = dateRaw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     let date = dateRaw;
     if (m) {
-      const day = m[1];
-      const month = m[2];
-      const now = new Date();
-      let year = now.getFullYear();
-      if (Number(month) > now.getMonth() + 1) year -= 1;
-      date = `${year}-${month}-${day}`;
+      date = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+    } else {
+      // 兼容旧格式 dd/mm（年份取当前年，跨年时回退一年）
+      const m2 = dateRaw.match(/(\d{2})\/(\d{2})/);
+      if (m2) {
+        const now = new Date();
+        let year = now.getFullYear();
+        if (Number(m2[2]) > now.getMonth() + 1) year -= 1;
+        date = `${year}-${m2[2]}-${m2[1]}`;
+      }
     }
     return { usd_oz: usd, date };
   };
   const am = pick(gold && gold.am);
   const pm = pick(gold && gold.pm);
-  if (!am && !pm) return { ok: false, reason: 'lbma empty' };
-  return { ok: true, am, pm };
+  if (!am && !pm) return null;
+  return { am, pm };
+}
+
+async function fetchLbmaDirect() {
+  const res = await fetchCached(LBMA_TODAY_URL, { headers: LBMA_HEADERS }, TTL.lbma);
+  if (!res.ok) return { ok: false, reason: `lbma status ${res.status}` };
+  const data = await res.json();
+  const parsed = parseLbmaToday(data);
+  if (!parsed) return { ok: false, reason: 'lbma empty' };
+  // 成功后把响应存进「最后一次成功」缓存（fetchCached 已按 TTL.lbma 缓存原始响应；
+  // 这里再存一份长 TTL 副本，供后续失败兜底）
+  try {
+    const cache = typeof caches !== 'undefined' ? caches.default : null;
+    if (cache) {
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+        'x-cached-at': String(Date.now()),
+        'Cache-Control': `public, max-age=${LBMA_LASTGOOD_TTL}`
+      });
+      await cache.put(
+        new Request(LBMA_LASTGOOD_URL, { method: 'GET' }),
+        new Response(JSON.stringify(data), { status: 200, headers })
+      );
+    }
+  } catch (e) { /* 缓存失败不影响返回 */ }
+  return { ok: true, ...parsed };
+}
+
+async function fetchLbmaWayback() {
+  // web.archive.org 的 /web/2id_/ 前缀会 302 到最近的快照；找不到快照时返回 404
+  const res = await fetchWithTimeout(`https://web.archive.org/web/2id_/${LBMA_TODAY_URL}`, { headers: LBMA_HEADERS }, 8000);
+  if (!res.ok) return { ok: false, reason: `wayback status ${res.status}` };
+  const data = await res.json();
+  const parsed = parseLbmaToday(data);
+  if (!parsed) return { ok: false, reason: 'wayback empty' };
+  return { ok: true, ...parsed };
+}
+
+async function fetchLbmaLastGood() {
+  const cache = typeof caches !== 'undefined' ? caches.default : null;
+  if (!cache) return { ok: false, reason: 'no cache api' };
+  try {
+    const cached = await cache.match(new Request(LBMA_LASTGOOD_URL, { method: 'GET' }));
+    if (!cached) return { ok: false, reason: 'no lastgood' };
+    const data = await cached.json();
+    const parsed = parseLbmaToday(data);
+    if (!parsed) return { ok: false, reason: 'lastgood empty' };
+    return { ok: true, ...parsed, stale: true };
+  } catch (e) {
+    return { ok: false, reason: `lastgood ${String((e && e.message) || e)}` };
+  }
+}
+
+async function fetchLbma() {
+  const direct = await fetchLbmaDirect().catch((e) => ({ ok: false, reason: String((e && e.message) || e) }));
+  if (direct.ok) return direct;
+  const wayback = await fetchLbmaWayback().catch((e) => ({ ok: false, reason: String((e && e.message) || e) }));
+  if (wayback.ok) return wayback;
+  const lastGood = await fetchLbmaLastGood().catch((e) => ({ ok: false, reason: String((e && e.message) || e) }));
+  if (lastGood.ok) return lastGood;
+  return { ok: false, reason: `${direct.reason}; ${wayback.reason}; ${lastGood.reason}` };
 }
 
 // 5) 汇率：主源 open.er-api.com（每日更新，免 key）；备源 frankfurter.dev（ECB，T-1）
